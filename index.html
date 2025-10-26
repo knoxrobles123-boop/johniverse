@@ -10,6 +10,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
 <style>
+/* === BODY & BACKGROUND === */
 body {
   margin:0;
   font-family: 'Poppins', sans-serif;
@@ -20,75 +21,146 @@ body {
   min-height:100vh;
   background-size:cover;
   background-position:center;
+  transition: background 1s ease-in-out;
 }
 
-/* Containers */
+/* === LOADING SCREEN === */
+#loading-screen {
+  position:fixed; top:0; left:0;
+  width:100%; height:100%;
+  background: radial-gradient(circle, #0d0d0d, #000);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  z-index:9999;
+  opacity:1;
+  transition: opacity 1s ease;
+}
+.loader {
+  width:70px; height:70px;
+  border:8px solid rgba(255,255,255,0.2);
+  border-top:8px solid #a84eff;
+  border-radius:50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { from {transform:rotate(0);} to {transform:rotate(360deg);} }
+#loading-text { color: #d7baff; margin-top: 10px; font-size:18px; animation: fadeText 1s infinite alternate;}
+@keyframes fadeText { from {opacity:0.5;} to {opacity:1;} }
+
+/* === CONTAINERS === */
 .container {
   display:none;
   background: rgba(0,0,0,0.75);
-  padding:20px;
+  padding:25px;
   border-radius:15px;
-  box-shadow:0 0 15px #a84eff;
-  width:90%;
-  max-width:400px;
+  box-shadow: 0 0 25px #a84eff;
+  width:90%; max-width:400px;
   text-align:center;
+  opacity:0;
+  transform: translateY(-20px);
+  transition: all 0.5s ease;
+}
+.container.show {
+  display:block;
+  opacity:1;
+  transform: translateY(0);
 }
 
-h1,h2,h3 { color:#d7baff; }
-
+/* === INPUTS === */
 input {
   width:90%;
-  padding:10px;
+  padding:12px;
   margin:10px;
   border:none;
   border-radius:5px;
   background: rgba(255,255,255,0.1);
   color:white;
+  transition: all 0.3s;
+}
+input:focus {
+  background: rgba(255,255,255,0.2);
+  box-shadow: 0 0 10px #a84eff;
+  outline:none;
 }
 
+/* === BUTTONS === */
 button {
   background:#a84eff;
   border:none;
-  padding:10px 20px;
-  border-radius:5px;
+  padding:12px 25px;
+  border-radius:8px;
   color:white;
   font-weight:bold;
   cursor:pointer;
   margin-top:10px;
+  transition: all 0.3s;
+  box-shadow:0 0 5px #a84eff;
+}
+button:hover {
+  background:#c07bff;
+  transform: scale(1.05);
+  box-shadow:0 0 15px #c07bff;
 }
 
-button:hover { background:#c07bff; }
+/* === LINKS === */
+.link {
+  color:#d7baff; cursor:pointer; display:block; margin-top:10px;
+  transition: all 0.3s;
+}
+.link:hover { color:#fff; text-shadow:0 0 5px #a84eff; }
 
-.link { color:#d7baff; cursor:pointer; display:block; margin-top:10px; }
-
-/* Dashboard */
+/* === DASHBOARD === */
 #dashboard {
   display:none;
   flex-direction:column;
   align-items:center;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0,0,0,0.85);
   border-radius:15px;
-  padding:20px;
-  box-shadow:0 0 20px #a84eff;
-  width:90%;
-  max-width:700px;
+  padding:25px;
+  box-shadow:0 0 30px #a84eff;
+  width:90%; max-width:750px;
   text-align:center;
-  position:relative;
+  opacity:0;
+  transform: translateY(-20px);
+  transition: all 0.5s ease;
+}
+#dashboard.show {
+  display:flex;
+  opacity:1;
+  transform: translateY(0);
 }
 
-.pfp-container { position:relative; display:inline-block; }
-#pfp { width:120px; height:120px; border-radius:50%; border:3px solid #a84eff; object-fit:cover; }
-.online-dot { position:absolute; bottom:8px; right:8px; width:20px; height:20px; background:#00ff66; border-radius:50%; border:2px solid white; }
+/* === PROFILE PICTURE === */
+.pfp-container { position:relative; display:inline-block; margin-bottom:15px; }
+#pfp { width:120px; height:120px; border-radius:50%; border:3px solid #a84eff; object-fit:cover; transition: all 0.3s; }
+#pfp:hover { transform: scale(1.1); box-shadow:0 0 20px #a84eff; }
 
-/* Chat */
-#chat-section { margin-top:20px; width:90%; max-width:600px; text-align:left; }
-#chat-messages { height:200px; overflow:auto; background: rgba(255,255,255,0.1); padding:10px; border-radius:5px; }
-#chat-input { width:80%; display:inline-block; }
-#chat-send { display:inline-block; padding:10px 15px; }
+/* === FRIENDS LIST === */
+#friends-list div {
+  background: rgba(255,255,255,0.1);
+  padding:8px 12px;
+  margin:5px 0;
+  border-radius:5px;
+  transition: all 0.3s;
+}
+#friends-list div:hover { background: rgba(168,78,255,0.3); transform: scale(1.02); }
+
+/* === CHAT === */
+#chat-section { margin-top:20px; width:90%; max-width:650px; text-align:left; }
+#chat-messages { height:200px; overflow:auto; background: rgba(255,255,255,0.1); padding:10px; border-radius:5px; transition: all 0.3s; }
+#chat-messages div { margin:4px 0; padding:4px; border-radius:4px; background: rgba(255,255,255,0.05); opacity:0; animation: fadeIn 0.5s forwards; }
+@keyframes fadeIn { to { opacity:1; } }
 
 </style>
 </head>
 <body>
+
+<!-- LOADING -->
+<div id="loading-screen">
+  <div class="loader"></div>
+  <p id="loading-text">Loading Johniverse...</p>
+</div>
 
 <!-- LOGIN -->
 <div class="container" id="login-container">
@@ -119,10 +191,10 @@ button:hover { background:#c07bff; }
   <button onclick="changeName()">Change Name</button>
   <button onclick="logout()">Logout</button>
 
-  <!-- Ping Pong -->
-  <button onclick="location.href='https://your-pingpong-website.com'">Play Ping Pong</button>
+  <!-- Ping Pong Button -->
+  <button onclick="window.location.href='https://your-pingpong-website.com'">Play Ping Pong</button>
 
-  <!-- Friends List -->
+  <!-- Friends -->
   <div id="friends-section">
     <h3>Friends</h3>
     <input type="text" id="friend-search" placeholder="Add by email or username">
@@ -140,7 +212,7 @@ button:hover { background:#c07bff; }
 </div>
 
 <script>
-/* --- Firebase Setup --- */
+/* === Firebase Setup === */
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "johniverseportal.firebaseapp.com",
@@ -153,7 +225,7 @@ const firebaseConfig = {
 const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-/* --- Random JJK Meme Background --- */
+/* === Random JJK Backgrounds === */
 const jjkMemes = [
   "https://i.imgur.com/7J9YhQF.jpg",
   "https://i.imgur.com/fTj0VqC.jpg",
@@ -161,11 +233,23 @@ const jjkMemes = [
 ];
 document.body.style.backgroundImage = `url(${jjkMemes[Math.floor(Math.random()*jjkMemes.length)]})`;
 
-/* --- Show/Hide Forms --- */
-function showSignup(){ document.getElementById("login-container").style.display="none"; document.getElementById("signup-container").style.display="block"; }
-function showLogin(){ document.getElementById("signup-container").style.display="none"; document.getElementById("login-container").style.display="block"; }
+/* === Loading Screen === */
+window.addEventListener("load", ()=>{
+  setTimeout(()=>{
+    document.getElementById("loading-screen").style.opacity="0";
+    setTimeout(()=>{
+      document.getElementById("loading-screen").style.display="none";
+      if(localStorage.getItem("currentUser")) loadDashboard();
+      else document.getElementById("login-container").classList.add("show");
+    },1000);
+  },1500);
+});
 
-/* --- Signup --- */
+/* === Show/Hide Forms === */
+function showSignup(){ document.getElementById("login-container").classList.remove("show"); document.getElementById("signup-container").classList.add("show"); }
+function showLogin(){ document.getElementById("signup-container").classList.remove("show"); document.getElementById("login-container").classList.add("show"); }
+
+/* === Signup/Login Functions === */
 function signup(){
   const email = document.getElementById("signup-email").value;
   const username = document.getElementById("signup-username").value;
@@ -173,41 +257,38 @@ function signup(){
   if(!email||!username||!password) return alert("Fill all fields!");
   const userData = {email, name:username, friends:[], pfp:"https://i.imgur.com/fb7yZkX.png"};
   localStorage.setItem(email, JSON.stringify(userData));
-  localStorage.setItem("currentUser", email); // Auto-login
+  localStorage.setItem("currentUser", email);
   loadDashboard();
 }
-
-/* --- Login --- */
 function login(){
   const email = document.getElementById("login-email").value;
-  const password = document.getElementById("login-password").value;
   const data = JSON.parse(localStorage.getItem(email));
   if(!data) return alert("Account does not exist!");
   localStorage.setItem("currentUser", email);
   loadDashboard();
 }
 
-/* --- Load Dashboard --- */
+/* === Load Dashboard === */
 function loadDashboard(){
   const email = localStorage.getItem("currentUser");
-  if(!email) return;
   const data = JSON.parse(localStorage.getItem(email));
-  document.getElementById("login-container").style.display="none";
-  document.getElementById("signup-container").style.display="none";
-  document.getElementById("dashboard").style.display="flex";
+  document.getElementById("login-container").classList.remove("show");
+  document.getElementById("signup-container").classList.remove("show");
+  const dash = document.getElementById("dashboard");
+  dash.classList.add("show");
   document.getElementById("username-display").innerText = data.name;
   document.getElementById("pfp").src = data.pfp;
   updateFriendsList();
 }
 
-/* --- Logout --- */
+/* === Logout === */
 function logout(){
   localStorage.removeItem("currentUser");
-  document.getElementById("dashboard").style.display="none";
-  document.getElementById("login-container").style.display="block";
+  document.getElementById("dashboard").classList.remove("show");
+  document.getElementById("login-container").classList.add("show");
 }
 
-/* --- Change Name --- */
+/* === Change Name === */
 function changeName(){
   const newName = prompt("Enter new username:");
   if(!newName) return;
@@ -218,51 +299,44 @@ function changeName(){
   document.getElementById("username-display").innerText = newName;
 }
 
-/* --- Friends List --- */
+/* === Friends List === */
 function addFriend(){
   const search = document.getElementById("friend-search").value;
   if(!search) return;
-  const allUsers = Object.keys(localStorage).filter(key=> key!=="currentUser");
-  const matches = [];
+  const allUsers = Object.keys(localStorage).filter(k=>k!=="currentUser");
+  const matches=[];
   allUsers.forEach(u=>{
     const data = JSON.parse(localStorage.getItem(u));
-    if(data.email===search || data.name.toLowerCase()===search.toLowerCase()) matches.push(data);
+    if(data.email===search||data.name.toLowerCase()===search.toLowerCase()) matches.push(data);
   });
-  const currentUserEmail = localStorage.getItem("currentUser");
-  const currentData = JSON.parse(localStorage.getItem(currentUserEmail));
-  matches.forEach(m=>{
-    if(!currentData.friends.includes(m.email)){
-      currentData.friends.push(m.email);
-    }
-  });
-  localStorage.setItem(currentUserEmail, JSON.stringify(currentData));
+  const email = localStorage.getItem("currentUser");
+  const currData = JSON.parse(localStorage.getItem(email));
+  matches.forEach(m=>{ if(!currData.friends.includes(m.email)) currData.friends.push(m.email); });
+  localStorage.setItem(email, JSON.stringify(currData));
   updateFriendsList();
 }
 function updateFriendsList(){
   const email = localStorage.getItem("currentUser");
   const data = JSON.parse(localStorage.getItem(email));
   const friendsDiv = document.getElementById("friends-list");
-  friendsDiv.innerHTML = "";
+  friendsDiv.innerHTML="";
   data.friends.forEach(f=>{
-    const friendData = JSON.parse(localStorage.getItem(f));
+    const fd = JSON.parse(localStorage.getItem(f));
     const div = document.createElement("div");
-    div.textContent = friendData ? friendData.name : f;
+    div.textContent = fd?fd.name:f;
     friendsDiv.appendChild(div);
   });
 }
 
-/* --- Global Chat --- */
-document.getElementById("chat-input").addEventListener("keypress", function(e){
-  if(e.key==="Enter") sendMessage();
-});
+/* === Global Chat === */
+document.getElementById("chat-input").addEventListener("keypress", function(e){ if(e.key==="Enter") sendMessage(); });
 function sendMessage(){
   const email = localStorage.getItem("currentUser");
   const data = JSON.parse(localStorage.getItem(email));
   const msg = document.getElementById("chat-input").value;
   if(!msg) return;
-  const chatRef = db.ref('chat/' + Date.now());
-  chatRef.set({user:data.name, email:data.email, message:msg});
-  document.getElementById("chat-input").value = "";
+  db.ref('chat/' + Date.now()).set({user:data.name, email:data.email, message:msg});
+  document.getElementById("chat-input").value="";
 }
 db.ref('chat/').on('value', snapshot=>{
   const data = snapshot.val();
@@ -276,11 +350,6 @@ db.ref('chat/').on('value', snapshot=>{
       chatBox.scrollTop = chatBox.scrollHeight;
     });
   }
-});
-
-/* --- Auto-login if user exists --- */
-window.addEventListener("load", ()=>{
-  if(localStorage.getItem("currentUser")) loadDashboard();
 });
 </script>
 </body>
