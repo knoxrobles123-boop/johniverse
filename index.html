@@ -22,7 +22,8 @@ button:hover{background:#c07bff;}
 #pfp{width:120px;height:120px;border-radius:50%;border:3px solid #a84eff;object-fit:cover;}
 .online-dot{position:absolute;bottom:8px;right:8px;width:20px;height:20px;background:#00ff66;border-radius:50%;border:2px solid white;}
 .section-container{margin-top:20px;background:rgba(255,255,255,0.1);padding:15px;border-radius:10px;text-align:center;}
-#friends-list{list-style:none;padding-left:0;}
+#friends-list,#friend-search-results{list-style:none;padding-left:0;}
+.friend-item{cursor:pointer;margin:5px 0;padding:5px;background:rgba(255,255,255,0.1);border-radius:5px;}
 #chat-box{display:none;position:fixed;bottom:20px;right:20px;width:300px;max-height:400px;background:rgba(0,0,0,0.9);border:2px solid #a84eff;border-radius:10px;flex-direction:column;padding:10px;overflow:hidden;display:flex;flex-direction:column;}
 #chat-messages{flex:1;overflow-y:auto;height:250px;border-bottom:1px solid #a84eff;margin-bottom:5px;padding:5px;}
 #chat-input{width:100%;padding:5px;border:none;border-radius:5px;margin-top:5px;}
@@ -73,7 +74,7 @@ button:hover{background:#c07bff;}
   <button onclick="changeName()">Change Name</button>
   <button onclick="logout()">Logout</button>
 
-  <!-- LINKS -->
+  <!-- QUICK LINKS -->
   <div class="section-container">
     <h3>🌐 Quick Links</h3>
     <a href="https://www.google.com" target="_blank" style="color:#d7baff;">Google</a> | 
@@ -92,15 +93,17 @@ button:hover{background:#c07bff;}
   <!-- GAMES -->
   <div class="section-container">
     <h3>🏓 Games</h3>
-    <button onclick="window.open('https://example.com/pingpong','_blank')">Play Ping Pong</button>
+    <button onclick="openPingPong()">Play Ping Pong</button>
   </div>
 
   <!-- FRIENDS -->
   <div class="section-container">
-    <h3>👥 Friends</h3>
+    <h3>👥 Add Friend</h3>
+    <input type="text" id="friend-search" placeholder="By Email or Username" style="padding:5px; margin-top:5px;">
+    <button onclick="searchFriends()">Search</button>
+    <ul id="friend-search-results"></ul>
+    <h3>Your Friends</h3>
     <ul id="friends-list"></ul>
-    <input type="email" id="friend-email" placeholder="Add friend by email" style="padding:5px; margin-top:5px;">
-    <button onclick="addFriend()">Add Friend</button>
   </div>
 
   <!-- CHAT -->
@@ -119,10 +122,7 @@ button:hover{background:#c07bff;}
 <script>
 /* --- LOADING --- */
 window.addEventListener("load", ()=>{
-  setTimeout(()=>{
-    document.getElementById("loading-screen").style.display="none";
-    autoLogin();
-  },1500);
+  setTimeout(()=>{document.getElementById("loading-screen").style.display="none"; autoLogin();},1500);
 });
 
 /* --- PASSWORD TOGGLE --- */
@@ -184,78 +184,96 @@ function logout(){ localStorage.removeItem("currentUser"); document.getElementBy
 
 /* --- PROFILE --- */
 function changePfp(){ 
-  const input=document.createElement("input"); 
-  input.type="file"; input.accept="image/*";
+  const input=document.createElement("input"); input.type="file"; input.accept="image/*";
   input.onchange=e=>{
-    const file=e.target.files[0];
-    const reader=new FileReader();
+    const file=e.target.files[0]; const reader=new FileReader();
     reader.onload=function(){
-      const email=localStorage.getItem("currentUser");
-      const data=JSON.parse(localStorage.getItem(email));
-      data.pfp=reader.result;
-      localStorage.setItem(email,JSON.stringify(data));
+      const email=localStorage.getItem("currentUser"); const data=JSON.parse(localStorage.getItem(email));
+      data.pfp=reader.result; localStorage.setItem(email,JSON.stringify(data));
       document.getElementById("pfp").src=reader.result;
     };
     reader.readAsDataURL(file);
   };
   input.click();
 }
+
 function changeName(){
-  const newName=prompt("Enter new username:");
+  const newName=prompt("Enter your new username:");
   if(!newName) return;
-  const email=localStorage.getItem("currentUser");
-  const data=JSON.parse(localStorage.getItem(email));
-  data.name=newName;
-  localStorage.setItem(email,JSON.stringify(data));
+  const email=localStorage.getItem("currentUser"); const data=JSON.parse(localStorage.getItem(email));
+  data.name=newName; localStorage.setItem(email,JSON.stringify(data));
   document.getElementById("username-display").innerText=newName;
-}
-
-/* --- FRIENDS --- */
-function addFriend(){
-  const friendEmail=document.getElementById("friend-email").value.trim();
-  const email=localStorage.getItem("currentUser");
-  if(!friendEmail||friendEmail===email){ alert("Invalid email"); return; }
-  const friendData=JSON.parse(localStorage.getItem(friendEmail));
-  if(!friendData){ alert("No such user"); return; }
-  const data=JSON.parse(localStorage.getItem(email));
-  if(data.friends.includes(friendEmail)){ alert("Already friends"); return; }
-  data.friends.push(friendEmail);
-  localStorage.setItem(email,JSON.stringify(data));
-  renderFriends();
-  document.getElementById("friend-email").value="";
-}
-function renderFriends(){
-  const email=localStorage.getItem("currentUser");
-  const data=JSON.parse(localStorage.getItem(email));
-  const list=document.getElementById("friends-list");
-  list.innerHTML="";
-  data.friends.forEach(f=>{
-    const fData=JSON.parse(localStorage.getItem(f));
-    if(fData){
-      const li=document.createElement("li");
-      li.innerText=fData.name+" ("+fData.email+")";
-      list.appendChild(li);
-    }
-  });
-}
-
-/* --- CHAT --- */
-function toggleChat(){ const box=document.getElementById("chat-box"); box.style.display=box.style.display==="flex"?"none":"flex"; }
-function sendChat(){
-  const input=document.getElementById("chat-input"); 
-  const msg=input.value.trim(); 
-  if(!msg) return;
-  const messages=document.getElementById("chat-messages");
-  const email=localStorage.getItem("currentUser");
-  messages.innerHTML+="<p><b>"+email+":</b> "+msg+"</p>";
-  input.value=""; messages.scrollTop=messages.scrollHeight;
 }
 
 /* --- WIKI --- */
 function searchWiki(){
-  const q=document.getElementById("wiki-query").value.trim();
-  if(!q) return;
-  document.getElementById("wiki-frame").src="https://en.wikipedia.org/wiki/"+encodeURIComponent(q);
+  const query=document.getElementById("wiki-query").value.trim();
+  if(!query) return;
+  document.getElementById("wiki-frame").src="https://en.wikipedia.org/wiki/"+encodeURIComponent(query);
+}
+
+/* --- PING PONG REDIRECT --- */
+function openPingPong(){ window.open("pingpong.html","PingPong","width=650,height=450"); }
+
+/* --- FRIENDS --- */
+function searchFriends(){
+  const query=document.getElementById("friend-search").value.trim().toLowerCase();
+  const resultsContainer=document.getElementById("friend-search-results");
+  resultsContainer.innerHTML="";
+  if(!query) return;
+  Object.keys(localStorage).forEach(email=>{
+    if(email==="currentUser") return;
+    const user=JSON.parse(localStorage.getItem(email));
+    if(user.email.toLowerCase().includes(query)||user.name.toLowerCase().includes(query)){
+      const li=document.createElement("li");
+      li.className="friend-item";
+      li.textContent=user.name+" ("+user.email+")";
+      li.onclick=()=>addFriend(email);
+      resultsContainer.appendChild(li);
+    }
+  });
+}
+
+function addFriend(emailToAdd){
+  const currentEmail=localStorage.getItem("currentUser");
+  if(emailToAdd===currentEmail) return alert("Cannot add yourself!");
+  const currentData=JSON.parse(localStorage.getItem(currentEmail));
+  if(!currentData.friends.includes(emailToAdd)){
+    currentData.friends.push(emailToAdd);
+    localStorage.setItem(currentEmail,JSON.stringify(currentData));
+    renderFriends();
+    alert("Friend added!");
+  }else alert("Already a friend!");
+}
+
+function renderFriends(){
+  const currentEmail=localStorage.getItem("currentUser");
+  const data=JSON.parse(localStorage.getItem(currentEmail));
+  const list=document.getElementById("friends-list");
+  list.innerHTML="";
+  data.friends.forEach(email=>{
+    const user=JSON.parse(localStorage.getItem(email));
+    const li=document.createElement("li");
+    li.className="friend-item"; li.textContent=user.name+" ("+user.email+")";
+    list.appendChild(li);
+  });
+}
+
+/* --- CHAT --- */
+function toggleChat(){
+  const chat=document.getElementById("chat-box");
+  chat.style.display=chat.style.display==="flex"?"none":"flex";
+}
+
+function sendChat(){
+  const input=document.getElementById("chat-input");
+  const msg=input.value.trim();
+  if(!msg) return;
+  const messages=document.getElementById("chat-messages");
+  const username=JSON.parse(localStorage.getItem(localStorage.getItem("currentUser"))).name;
+  const p=document.createElement("p"); p.innerText=username+": "+msg;
+  messages.appendChild(p);
+  input.value=""; messages.scrollTop=messages.scrollHeight;
 }
 </script>
 </body>
