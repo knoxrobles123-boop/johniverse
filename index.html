@@ -4,94 +4,96 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Johniverse Portal 🌌</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; font-family: 'Poppins', sans-serif; margin:0; padding:0; }
-body { min-height:100vh; display:flex; justify-content:center; align-items:center; background:black; color:white; overflow-x:hidden; }
-
-/* Containers */
-.container { display:none; background:rgba(0,0,0,0.75); padding:20px; border-radius:15px; box-shadow:0 0 15px #a84eff; width:90%; max-width:400px; text-align:center; transition:all 0.3s ease; }
-h1,h2,h3{ margin:10px 0; }
-input,select{ width:90%; padding:10px; margin:5px 0; border-radius:5px; border:none; background:rgba(255,255,255,0.1); color:white; }
-button{ padding:10px 20px; margin:5px; border-radius:5px; border:none; background:#a84eff; color:white; font-weight:bold; cursor:pointer; transition:all 0.2s; }
-button:hover{ background:#c07bff; transform:scale(1.05); }
-.link{ color:#d7baff; cursor:pointer; display:block; margin-top:10px; text-decoration:underline; }
-
-/* Dashboard */
-#dashboard{ display:none; flex-direction:column; align-items:center; background:rgba(0,0,0,0.8); border-radius:15px; padding:20px; box-shadow:0 0 20px #a84eff; width:90%; max-width:800px; position:relative; }
-.pfp-container{ position:relative; display:inline-block; }
-#pfp{ width:120px; height:120px; border-radius:50%; border:3px solid #a84eff; object-fit:cover; cursor:pointer; transition:all 0.2s;}
-#pfp:hover{ transform:scale(1.05); }
-.online-dot{ position:absolute; bottom:8px; right:8px; width:20px; height:20px; background:#00ff66; border-radius:50%; border:2px solid white; }
-
-#friends-list div:hover{ background:#2a2a2a; cursor:pointer; }
-
-#game-container{ margin-top:20px; }
-
-/* Chat */
-#chat-box{ width:100%; max-width:700px; height:150px; overflow-y:auto; background:rgba(0,0,0,0.5); margin:10px 0; padding:5px; border-radius:10px; }
-#chat-box div{ margin:2px 0; padding:2px 5px; background:rgba(255,255,255,0.1); border-radius:5px; }
-
-/* Star */
-.star{ position:absolute; width:30px; height:30px; background:yellow; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); cursor:pointer; }
-
-/* Background */
-body{ background-size:cover; background-position:center; transition:background 0.5s; }
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Roboto',sans-serif;}
+body{
+  background:#111;
+  background-size:cover;
+  display:flex;justify-content:center;align-items:flex-start;
+  min-height:100vh;color:#fff;
+}
+.container, #dashboard{
+  display:none;
+  background: rgba(20,20,20,0.95);
+  border-radius:15px;
+  box-shadow:0 10px 20px rgba(0,0,0,0.6);
+  padding:20px;
+  width:90%; max-width:600px;
+  margin-top:50px;
+  transition:all 0.3s ease;
+}
+h1,h2,h3{margin-bottom:10px;color:#d7baff;}
+input,button,select{
+  padding:10px;margin:5px 0;border-radius:5px;border:none;
+}
+button{
+  background:linear-gradient(90deg,#a84eff,#ff4b8d);
+  cursor:pointer;font-weight:bold;transition:all 0.2s;
+}
+button:hover{transform:scale(1.05);opacity:0.9;}
+input{width:100%;background:#222;color:#fff;}
+#chat-box{height:150px;overflow-y:auto;background:#222;padding:10px;border-radius:10px;margin-bottom:10px;}
+.friend-item{padding:5px;margin:2px;background:#333;border-radius:5px;cursor:pointer;}
+.friend-item:hover{background:#555;}
+#game-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:10px;}
+.game-card{background:#222;border-radius:10px;padding:10px;text-align:center;cursor:pointer;transition:0.2s;}
+.game-card:hover{transform:scale(1.05);background:#444;}
+#pfp{border-radius:50%;border:3px solid #a84eff;width:100px;height:100px;margin-bottom:10px;}
 </style>
 </head>
 <body>
 
 <!-- Login -->
 <div class="container" id="login-container">
-  <h1>Login</h1>
-  <input type="email" id="login-email" placeholder="Email">
-  <input type="password" id="login-password" placeholder="Password">
-  <button onclick="login()">Login</button>
-  <span class="link" onclick="showSignup()">Create Account</span>
+<h1>Login</h1>
+<input type="email" id="login-email" placeholder="Email">
+<input type="password" id="login-password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p style="text-align:center;margin-top:5px;cursor:pointer;color:#a84eff;" onclick="showSignup()">Create Account</p>
 </div>
 
 <!-- Signup -->
 <div class="container" id="signup-container">
-  <h1>Create Account</h1>
-  <input type="email" id="signup-email" placeholder="Email">
-  <input type="text" id="signup-username" placeholder="Username">
-  <input type="password" id="signup-password" placeholder="Password">
-  <button onclick="signup()">Create Account</button>
-  <span class="link" onclick="showLogin()">Back to Login</span>
+<h1>Sign Up</h1>
+<input type="email" id="signup-email" placeholder="Email">
+<input type="text" id="signup-username" placeholder="Username">
+<input type="password" id="signup-password" placeholder="Password">
+<button onclick="signup()">Create Account</button>
+<p style="text-align:center;margin-top:5px;cursor:pointer;color:#a84eff;" onclick="showLogin()">Back to Login</p>
 </div>
 
 <!-- Dashboard -->
 <div id="dashboard">
-  <div class="pfp-container">
-    <img id="pfp" src="https://i.imgur.com/fb7yZkX.png" onclick="changePfp()">
-    <div class="online-dot"></div>
-    <input type="file" id="pfp-upload" style="display:none">
-  </div>
-  <h2 id="username-display">Welcome</h2>
-  <div>Online Users: <span id="online-count">0</span></div>
+<h2 id="username-display">Welcome</h2>
+<p>Online Users: <span id="online-count">0</span></p>
 
-  <h3>Friends</h3>
-  <input type="text" id="friend-search" placeholder="Search by email or username">
-  <div id="friends-list"></div>
+<img id="pfp" src="https://i.imgur.com/fb7yZkX.png">
+<button onclick="changePfp()">Change PFP</button>
 
-  <h3>Global Chat</h3>
-  <div id="chat-box"></div>
-  <input type="text" id="chat-input" placeholder="Type message">
-  <button onclick="sendChat()">Send</button>
-  <audio id="chat-sound" src="https://freesound.org/data/previews/514/514556_921394-lq.mp3"></audio>
+<h3>Friends</h3>
+<input type="text" id="friend-search" placeholder="Search by email or username" oninput="searchFriends()">
+<div id="friend-list"></div>
 
-  <h3>Games</h3>
-  <div>
-    <button id="game-pingpong">Ping Pong</button>
-    <button id="game-snake">Snake</button>
-    <button id="game-star">Click Star</button>
-  </div>
-  <div id="game-container"></div>
+<h3>Global Chat</h3>
+<div id="chat-box"></div>
+<input type="text" id="chat-input" placeholder="Type message">
+<button onclick="sendChat()">Send</button>
+
+<h3>Games</h3>
+<div id="game-container">
+  <div class="game-card" onclick="startPingPong()">Ping Pong</div>
+  <div class="game-card" onclick="startSnake()">Snake</div>
+  <div class="game-card" onclick="startStar()">Click Star</div>
+</div>
+
+<button onclick="logout()">Logout</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-// Firebase
+// Firebase setup
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -102,246 +104,126 @@ const firebaseConfig = {
   appId: "APP_ID"
 };
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+const db=firebase.database();
 
-// Backgrounds
-const backgrounds = [
-  "https://wallpapercave.com/wp/wp10816761.jpg",
-  "https://i.pinimg.com/originals/c4/7c/5c/c47c5c4f620b2153266e7422c9e43455.jpg",
-  "https://images6.alphacoders.com/114/1145396.jpg"
+// Random backgrounds
+const backgrounds=[
+  'https://wallpapercave.com/wp/wp10816761.jpg',
+  'https://wallpapercave.com/wp/wp10593829.jpg',
+  'https://wallpapercave.com/wp/wp10816750.jpg'
 ];
-setInterval(()=>{ document.body.style.backgroundImage=`url(${backgrounds[Math.floor(Math.random()*backgrounds.length)]})`; },10000);
+function setRandomBackground(){document.body.style.backgroundImage=`url(${backgrounds[Math.floor(Math.random()*backgrounds.length)]})`;}
+setRandomBackground();
+setInterval(setRandomBackground,10000);
 
-// Login/Signup
-function showSignup(){ document.getElementById("login-container").style.display="none"; document.getElementById("signup-container").style.display="block"; }
-function showLogin(){ document.getElementById("signup-container").style.display="none"; document.getElementById("login-container").style.display="block"; }
+// Show login/signup
+function showSignup(){document.getElementById("login-container").style.display="none";document.getElementById("signup-container").style.display="block";}
+function showLogin(){document.getElementById("signup-container").style.display="none";document.getElementById("login-container").style.display="block";}
 
+// Signup
 function signup(){
   const email=document.getElementById("signup-email").value;
   const username=document.getElementById("signup-username").value;
   const password=document.getElementById("signup-password").value;
-  if(!email||!username||!password){ alert("Fill all fields!"); return; }
-  if(localStorage.getItem(email)){ alert("Account exists!"); return; }
-  const data={password,name:username,pfp:"https://i.imgur.com/fb7yZkX.png",friends:[]};
-  localStorage.setItem(email,JSON.stringify(data));
+  if(!email||!username||!password){alert("Fill all fields!");return;}
+  localStorage.setItem(email,JSON.stringify({username,password,pfp:"https://i.imgur.com/fb7yZkX.png"}));
   localStorage.setItem("currentUser",email);
   loadDashboard();
 }
 
+// Login
 function login(){
   const email=document.getElementById("login-email").value;
   const password=document.getElementById("login-password").value;
   const data=JSON.parse(localStorage.getItem(email));
-  if(!data||data.password!==password){ alert("Invalid login!"); return; }
+  if(!data||data.password!==password){alert("Invalid login!");return;}
   localStorage.setItem("currentUser",email);
   loadDashboard();
 }
 
+// Dashboard
 function loadDashboard(){
   const email=localStorage.getItem("currentUser");
   const data=JSON.parse(localStorage.getItem(email));
   document.getElementById("login-container").style.display="none";
   document.getElementById("signup-container").style.display="none";
   document.getElementById("dashboard").style.display="flex";
-  document.getElementById("username-display").innerText=data.name;
+  document.getElementById("username-display").innerText="Welcome "+data.username;
   document.getElementById("pfp").src=data.pfp;
-  loadFriends();
-  loadChat();
-  trackOnline();
+  trackOnline(); loadChat(); loadFriends();
 }
+
+// Logout
+function logout(){localStorage.removeItem("currentUser");location.reload();}
 
 // Change PFP
 function changePfp(){
-  const fileInput=document.getElementById("pfp-upload");
-  fileInput.click();
-  fileInput.onchange=e=>{
-    const file=e.target.files[0];
-    const reader=new FileReader();
-    reader.onload=()=>{
+  const input=document.createElement("input"); input.type="file"; input.accept="image/*";
+  input.onchange=e=>{
+    const file=e.target.files[0]; const reader=new FileReader();
+    reader.onload=function(){
       const email=localStorage.getItem("currentUser");
       const data=JSON.parse(localStorage.getItem(email));
-      data.pfp=reader.result;
-      localStorage.setItem(email,JSON.stringify(data));
+      data.pfp=reader.result; localStorage.setItem(email,JSON.stringify(data));
       document.getElementById("pfp").src=reader.result;
     };
     reader.readAsDataURL(file);
   };
-}
-
-// Friends
-function loadFriends(){
-  const email=localStorage.getItem("currentUser");
-  const data=JSON.parse(localStorage.getItem(email));
-  const listDiv=document.getElementById("friends-list");
-  listDiv.innerHTML="";
-  data.friends.forEach(f=>{
-    const div=document.createElement("div"); div.textContent=f; listDiv.appendChild(div);
-  });
-}
-document.getElementById("friend-search").addEventListener("input",()=>{
-  const val=document.getElementById("friend-search").value.toLowerCase();
-  const listDiv=document.getElementById("friends-list"); listDiv.innerHTML="";
-  Object.keys(localStorage).forEach(key=>{
-    if(key===val || JSON.parse(localStorage.getItem(key)).name.toLowerCase().startsWith(val)){
-      const div=document.createElement("div");
-      div.textContent=JSON.parse(localStorage.getItem(key)).name;
-      div.onclick=()=>{ addFriend(key); };
-      listDiv.appendChild(div);
-    }
-  });
-});
-function addFriend(key){
-  const email=localStorage.getItem("currentUser");
-  const data=JSON.parse(localStorage.getItem(email));
-  const friendName=JSON.parse(localStorage.getItem(key)).name;
-  if(!data.friends.includes(friendName)) data.friends.push(friendName);
-  localStorage.setItem(email,JSON.stringify(data));
-  loadFriends();
+  input.click();
 }
 
 // Chat
 function loadChat(){
-  db.ref("chat/").on("value",snapshot=>{
+  db.ref("chat/").on("value",snap=>{
     const chatBox=document.getElementById("chat-box"); chatBox.innerHTML="";
-    const data=snapshot.val();
+    const data=snap.val();
     if(data) Object.values(data).forEach(m=>{
-      const div=document.createElement("div");
-      div.textContent=`${m.user}: ${m.message}`;
-      chatBox.appendChild(div);
-      chatBox.scrollTop=chatBox.scrollHeight;
+      const div=document.createElement("div"); div.textContent=m.user+": "+m.message;
+      chatBox.appendChild(div); chatBox.scrollTop=chatBox.scrollHeight;
     });
   });
 }
 function sendChat(){
-  const msg=document.getElementById("chat-input").value;
-  if(!msg) return;
+  const msg=document.getElementById("chat-input").value; if(!msg) return;
   document.getElementById("chat-input").value="";
   const email=localStorage.getItem("currentUser");
-  const userData=JSON.parse(localStorage.getItem(email));
-  db.ref("chat/"+Date.now()).set({user:userData.name,message:msg});
-  document.getElementById("chat-sound").play();
+  const username=JSON.parse(localStorage.getItem(email)).username;
+  db.ref("chat/").push({user:username,message:msg});
 }
 
-// Online Users
+// Online users
 function trackOnline(){
   const email=localStorage.getItem("currentUser");
-  db.ref("online/"+email).set(true);
-  db.ref("online/"+email).onDisconnect().remove();
-  db.ref("online/").on("value",snap=>{
-    document.getElementById("online-count").innerText=Object.keys(snap.val()||{}).length;
+  const userRef=db.ref("online/"+email);
+  userRef.set(JSON.parse(localStorage.getItem(email)).username);
+  userRef.onDisconnect().remove();
+  db.ref("online/").on("value",snap=>document.getElementById("online-count").innerText=Object.keys(snap.val()||{}).length);
+}
+
+// Friends
+function loadFriends(){document.getElementById("friend-list").innerHTML="";}
+function searchFriends(){
+  const val=document.getElementById("friend-search").value.toLowerCase();
+  const list=document.getElementById("friend-list"); list.innerHTML="";
+  Object.keys(localStorage).forEach(key=>{
+    if(key==="currentUser") return;
+    const user=JSON.parse(localStorage.getItem(key));
+    if(user.username.toLowerCase().startsWith(val)||key.toLowerCase().startsWith(val)){
+      const div=document.createElement("div"); div.className="friend-item";
+      div.textContent=user.username+" ("+key+")"; div.onclick=()=>alert("Friend request sent to "+user.username);
+      list.appendChild(div);
+    }
   });
 }
 
-// Games
-let keys={}, pongCanvas, ctx, player1Y=150, player2Y=150, ballX=300, ballY=200, ballDX=4, ballDY=4, playerSpeed=6, gameRunning=false, mode="ai";
+// Auto-login
+if(localStorage.getItem("currentUser")) loadDashboard();
 
-// Ping Pong
-function startPingPong(selectedMode="ai"){
-  mode=selectedMode;
-  const container=document.getElementById("game-container");
-  container.innerHTML=`
-    <canvas id="pong" width="600" height="400"></canvas>
-    <button onclick="stopGame()">Stop Game</button>
-    <div>
-      <label>Mode: </label>
-      <select id="pong-mode">
-        <option value="ai">VS AI</option>
-        <option value="2p">2 Players</option>
-      </select>
-    </div>
-  `;
-  document.getElementById("pong-mode").value=mode;
-  document.getElementById("pong-mode").onchange=e=>mode=e.target.value;
-
-  pongCanvas=document.getElementById("pong");
-  ctx=pongCanvas.getContext("2d");
-  player1Y=player2Y=150; ballX=300; ballY=200; ballDX=4; ballDY=4;
-  gameRunning=true; keys={};
-  document.addEventListener("keydown",e=>keys[e.key]=true);
-  document.addEventListener("keyup",e=>keys[e.key]=false);
-  requestAnimationFrame(pongLoop);
-}
-function pongLoop(){
-  if(!gameRunning) return;
-  ctx.clearRect(0,0,600,400);
-
-  if(keys["w"]) player1Y-=playerSpeed;
-  if(keys["s"]) player1Y+=playerSpeed;
-
-  if(mode==="2p"){
-    if(keys["ArrowUp"]) player2Y-=playerSpeed;
-    if(keys["ArrowDown"]) player2Y+=playerSpeed;
-  } else {
-    let target=ballY-40;
-    if(player2Y+40<target) player2Y+=Math.min(4,target-(player2Y+40));
-    if(player2Y+40>target) player2Y-=Math.min(4,(player2Y+40)-target);
-  }
-
-  player1Y=Math.max(0,Math.min(320,player1Y));
-  player2Y=Math.max(0,Math.min(320,player2Y));
-
-  ctx.fillStyle="#fff";
-  ctx.fillRect(10,player1Y,10,80);
-  ctx.fillRect(580,player2Y,10,80);
-
-  ctx.beginPath(); ctx.arc(ballX,ballY,8,0,Math.PI*2); ctx.fill();
-
-  ballX+=ballDX; ballY+=ballDY;
-
-  if(ballY<=0||ballY>=400) ballDY=-ballDY;
-  if(ballX<=20 && ballY>player1Y && ballY<player1Y+80) ballDX=-ballDX;
-  if(ballX>=570 && ballY>player2Y && ballY<player2Y+80) ballDX=-ballDX;
-
-  if(ballX<0||ballX>600){ ballX=300; ballY=200; ballDX=-ballDX; ballDY=4*(Math.random()>0.5?1:-1); }
-
-  requestAnimationFrame(pongLoop);
-}
-
-// Stop game
-function stopGame(){ gameRunning=false; document.getElementById("game-container").innerHTML=""; }
-
-// Snake
-function startSnake(){
-  const container=document.getElementById("game-container");
-  container.innerHTML='<canvas id="snake" width="400" height="400"></canvas><button onclick="stopGame()">Stop Game</button>';
-  const canvas=document.getElementById("snake"); const ctx=canvas.getContext("2d");
-  let snake=[{x:10,y:10}], dir={x:1,y:0}, food={x:15,y:15}; gameRunning=true;
-  document.addEventListener("keydown",e=>{
-    if(e.key==="ArrowUp"&&dir.y!==1) dir={x:0,y:-1};
-    if(e.key==="ArrowDown"&&dir.y!==-1) dir={x:0,y:1};
-    if(e.key==="ArrowLeft"&&dir.x!==1) dir={x:-1,y:0};
-    if(e.key==="ArrowRight"&&dir.x!==-1) dir={x:1,y:0};
-  });
-  function loop(){
-    if(!gameRunning) return;
-    ctx.fillStyle="black"; ctx.fillRect(0,0,400,400);
-    const head={x:snake[snake.length-1].x+dir.x,y:snake[snake.length-1].y+dir.y};
-    snake.push(head);
-    if(head.x===food.x&&head.y===food.y) food={x:Math.floor(Math.random()*20),y:Math.floor(Math.random()*20)}; else snake.shift();
-    ctx.fillStyle="green"; snake.forEach(s=>ctx.fillRect(s.x*20,s.y*20,20,20));
-    ctx.fillStyle="red"; ctx.fillRect(food.x*20,food.y*20,20,20);
-    requestAnimationFrame(loop);
-  }
-  loop();
-}
-
-// Star Game
-function startStar(){
-  const container=document.getElementById("game-container");
-  container.innerHTML='<button onclick="stopGame()">Stop Game</button>';
-  for(let i=0;i<10;i++){
-    const star=document.createElement("div"); star.classList.add("star");
-    star.style.left=Math.random()*window.innerWidth+"px";
-    star.style.top=Math.random()*window.innerHeight+"px";
-    star.onclick=()=>{star.remove();};
-    container.appendChild(star);
-  }
-}
-
-// Buttons
-document.getElementById("game-pingpong").onclick=()=>startPingPong();
-document.getElementById("game-snake").onclick=()=>startSnake();
-document.getElementById("game-star").onclick=()=>startStar();
+// Games placeholders
+function clearGames(){document.getElementById("game-container").innerHTML='<div class="game-card" onclick="startPingPong()">Ping Pong</div><div class="game-card" onclick="startSnake()">Snake</div><div class="game-card" onclick="startStar()">Click Star</div>';}
+function startPingPong(){alert("Ping Pong game will appear here");}
+function startSnake(){alert("Snake game will appear here");}
+function startStar(){alert("Click Star game will appear here");}
 </script>
 </body>
 </html>
