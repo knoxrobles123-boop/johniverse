@@ -1,253 +1,320 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Johniverse Portal</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Johniverse Portal 🌌</title>
 <style>
-  body {
-    font-family: 'Poppins', sans-serif;
-    background: url('https://i.imgur.com/rn6ElqN.jpg') no-repeat center center fixed;
-    background-size: cover;
-    color: #fff;
-    margin: 0;
-    overflow-x: hidden;
-  }
+* { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+body {
+  margin: 0;
+  background: url('https://wallpapercave.com/wp/wp10816761.jpg') no-repeat center center/cover;
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
+/* --- LOADING --- */
+#loading-screen {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: radial-gradient(circle, #0d0d0d, #000);
+  display: flex; justify-content: center; align-items: center;
+  flex-direction: column; z-index: 9999;
+}
+.loader {
+  width: 70px; height: 70px;
+  border: 8px solid rgba(255,255,255,0.2);
+  border-top: 8px solid #a84eff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { from {transform:rotate(0);} to {transform:rotate(360deg);} }
+#loading-text { color: #d7baff; margin-top: 10px; }
 
-  .login-box, .signup-box {
-    background: rgba(0,0,0,0.75);
-    padding: 30px;
-    border-radius: 15px;
-    text-align: center;
-    width: 90%;
-    max-width: 400px;
-    display: none;
-  }
+/* --- CONTAINERS --- */
+.container {
+  display: none;
+  background: rgba(0,0,0,0.75);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 0 15px #a84eff;
+  width: 90%; max-width: 400px;
+  text-align: center;
+}
+h1 { color: #d7baff; }
 
-  .login-box.active, .signup-box.active {
-    display: block;
-  }
+input {
+  width: 90%; padding: 10px; margin: 10px;
+  border: none; border-radius: 5px;
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+button {
+  background: #a84eff; border: none;
+  padding: 10px 20px; border-radius: 5px;
+  color: white; font-weight: bold;
+  cursor: pointer; margin-top: 10px;
+}
+button:hover { background: #c07bff; }
+.link { color: #d7baff; cursor: pointer; display: block; margin-top: 10px; }
 
-  input[type="text"], input[type="password"], input[type="email"], input[type="file"] {
-    width: 90%;
-    padding: 10px;
-    margin: 10px 0;
-    border: none;
-    border-radius: 10px;
-  }
+/* --- DASHBOARD --- */
+#dashboard {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0,0,0,0.8);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 0 20px #a84eff;
+  width: 90%; max-width: 700px;
+  text-align: center;
+  position: relative;
+}
 
-  button {
-    background: #2ecc71;
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-weight: bold;
-  }
+.pfp-container {
+  position: relative;
+  display: inline-block;
+}
 
-  button:hover {
-    background: #27ae60;
-  }
+#pfp {
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  border: 3px solid #a84eff;
+  object-fit: cover;
+}
 
-  .toggle-link {
-    color: #9b59b6;
-    cursor: pointer;
-    text-decoration: underline;
-  }
+.online-dot {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  background: #00ff66;
+  border-radius: 50%;
+  border: 2px solid white;
+}
 
-  #dashboard {
-    display: none;
-    padding: 20px;
-    text-align: center;
-  }
+/* --- GAME --- */
+#pingpong-container {
+  margin-top: 20px;
+  background: rgba(255,255,255,0.1);
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+}
 
-  #pfp {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    border: 3px solid #fff;
-    object-fit: cover;
-  }
+canvas {
+  background: black;
+  border: 2px solid #a84eff;
+  display: block;
+  margin: 10px auto;
+}
 
-  .eye {
-    position: relative;
-    cursor: pointer;
-    color: #fff;
-    margin-left: -30px;
-  }
+#mode-select {
+  margin-bottom: 10px;
+  padding: 5px;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+}
 
-  @media (max-width: 600px) {
-    .login-box, .signup-box {
-      width: 95%;
-    }
-  }
-
-  #news, #wiki, #playerSearch {
-    background: rgba(0,0,0,0.6);
-    border-radius: 15px;
-    margin: 15px auto;
-    padding: 15px;
-    max-width: 700px;
-  }
-
-  #playerList button {
-    margin: 5px;
-  }
+/* MOBILE */
+@media (max-width: 768px) {
+  #dashboard { width: 95%; }
+  canvas { width: 100%; height: auto; }
+}
 </style>
 </head>
 <body>
 
-<div class="container">
-  <div id="loginBox" class="login-box active">
-    <h2>Welcome to Johniverse</h2>
-    <input type="text" id="loginEmail" placeholder="Email" /><br>
-    <div>
-      <input type="password" id="loginPassword" placeholder="Password" />
-      <span class="eye" onclick="togglePassword('loginPassword')">👁️</span>
-    </div>
-    <button onclick="login()">Login</button>
-    <p>Don't have an account? <span class="toggle-link" onclick="showSignup()">Sign Up</span></p>
-  </div>
-
-  <div id="signupBox" class="signup-box">
-    <h2>Create Account</h2>
-    <input type="email" id="signupEmail" placeholder="Email" /><br>
-    <div>
-      <input type="password" id="signupPassword" placeholder="Password" />
-      <span class="eye" onclick="togglePassword('signupPassword')">👁️</span>
-    </div>
-    <button onclick="signup()">Sign Up</button>
-    <p>Already have an account? <span class="toggle-link" onclick="showLogin()">Login</span></p>
-  </div>
+<!-- LOADING -->
+<div id="loading-screen">
+  <div class="loader"></div>
+  <p id="loading-text">Loading Johniverse...</p>
 </div>
 
+<!-- LOGIN -->
+<div class="container" id="login-container">
+  <h1>Login to Johniverse</h1>
+  <input type="email" id="login-email" placeholder="Email">
+  <div style="position:relative;">
+    <input type="password" id="login-password" placeholder="Password">
+    <span id="togglePassword" style="position:absolute; right:40px; top:15px; cursor:pointer;">👁️</span>
+  </div>
+  <button onclick="login()">Login</button>
+  <span class="link" onclick="showSignup()">Create account</span>
+</div>
+
+<!-- SIGNUP -->
+<div class="container" id="signup-container">
+  <h1>Create Johniverse Account</h1>
+  <input type="email" id="signup-email" placeholder="Email">
+  <input type="password" id="signup-password" placeholder="Password">
+  <button onclick="signup()">Sign Up</button>
+  <span class="link" onclick="showLogin()">Back to Login</span>
+</div>
+
+<!-- DASHBOARD -->
 <div id="dashboard">
-  <h2>Welcome, <span id="displayName"></span>!</h2>
-
-  <img id="pfp" src="https://i.imgur.com/WP7L5wb.png" alt="Profile Picture"><br>
-  <input type="file" id="pfpUpload" accept="image/*" onchange="changePfp()"><br><br>
-
-  <!-- 👇 Username change moved directly under PFP -->
-  <input type="text" id="changeName" placeholder="Enter new username">
-  <button onclick="updateName()">Save Username</button>
-  <br><br>
-
+  <div class="pfp-container">
+    <img id="pfp" src="https://i.imgur.com/fb7yZkX.png" alt="Profile Picture">
+    <div class="online-dot"></div>
+  </div>
+  <h2 id="username-display">Welcome, Traveler</h2>
+  <button onclick="changePfp()">Change PFP</button>
+  <button onclick="changeName()">Change Name</button>
   <button onclick="logout()">Logout</button>
 
-  <div id="news">
-    <h3>📰 Johniverse News</h3>
-    <p>Welcome to the multiverse! New features and characters coming soon!</p>
-  </div>
-
-  <div id="wiki">
-    <h3>🌐 Portable Wikipedia</h3>
-    <iframe src="https://en.m.wikipedia.org" width="100%" height="300"></iframe>
-  </div>
-
-  <div id="playerSearch">
-    <h3>🔍 Search Players</h3>
-    <input type="text" id="searchInput" placeholder="Search Player Name">
-    <button onclick="searchPlayer()">Search</button>
-    <div id="playerList"></div>
+  <div id="pingpong-container">
+    <h3>🏓 Ping Pong 3</h3>
+    <select id="mode-select">
+      <option value="ai">VS AI</option>
+      <option value="2p">2 Players</option>
+    </select>
+    <button onclick="startGame()">Start Game</button>
+    <canvas id="pong" width="600" height="400"></canvas>
   </div>
 </div>
 
 <script>
-function togglePassword(id) {
-  const input = document.getElementById(id);
-  input.type = input.type === 'password' ? 'text' : 'password';
-}
+/* --- LOADING --- */
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    document.getElementById("loading-screen").style.display = "none";
+    document.getElementById("login-container").style.display = "block";
+  }, 1500);
+});
 
+/* --- PASSWORD TOGGLE --- */
+document.getElementById("togglePassword").addEventListener("click", function() {
+  const pwd = document.getElementById("login-password");
+  pwd.type = pwd.type === "password" ? "text" : "password";
+});
+
+/* --- AUTH --- */
 function showSignup() {
-  document.getElementById('loginBox').classList.remove('active');
-  document.getElementById('signupBox').classList.add('active');
+  document.getElementById("login-container").style.display = "none";
+  document.getElementById("signup-container").style.display = "block";
 }
-
 function showLogin() {
-  document.getElementById('signupBox').classList.remove('active');
-  document.getElementById('loginBox').classList.add('active');
+  document.getElementById("signup-container").style.display = "none";
+  document.getElementById("login-container").style.display = "block";
 }
 
 function signup() {
-  const email = document.getElementById('signupEmail').value;
-  const password = document.getElementById('signupPassword').value;
-  if (email && password) {
-    localStorage.setItem('userEmail', email);
-    localStorage.setItem('userPassword', password);
-    localStorage.setItem('userName', email.split('@')[0]);
-    alert('Account created! You can now log in.');
-    showLogin();
-  } else {
-    alert('Please fill all fields.');
-  }
+  const email = document.getElementById("signup-email").value;
+  const password = document.getElementById("signup-password").value;
+  if (!email || !password) return alert("Fill all fields!");
+  localStorage.setItem(email, JSON.stringify({ password, name: "Traveler", pfp: "https://i.imgur.com/fb7yZkX.png" }));
+  alert("Account created! You can now log in.");
+  showLogin();
 }
 
 function login() {
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
-  const savedEmail = localStorage.getItem('userEmail');
-  const savedPassword = localStorage.getItem('userPassword');
-  if (email === savedEmail && password === savedPassword) {
-    showDashboard();
-  } else {
-    alert('Invalid email or password.');
-  }
+  const email = document.getElementById("login-email").value;
+  const password = document.getElementById("login-password").value;
+  const data = JSON.parse(localStorage.getItem(email));
+  if (!data || data.password !== password) return alert("Invalid login!");
+  localStorage.setItem("currentUser", email);
+  loadDashboard();
 }
 
-function showDashboard() {
-  document.querySelector('.container').style.display = 'none';
-  document.getElementById('dashboard').style.display = 'block';
-  document.getElementById('displayName').textContent = localStorage.getItem('userName') || 'User';
-  document.getElementById('pfp').src = localStorage.getItem('userPfp') || 'https://i.imgur.com/WP7L5wb.png';
+function loadDashboard() {
+  const email = localStorage.getItem("currentUser");
+  const data = JSON.parse(localStorage.getItem(email));
+  if (!data) return;
+  document.getElementById("login-container").style.display = "none";
+  document.getElementById("signup-container").style.display = "none";
+  document.getElementById("dashboard").style.display = "flex";
+  document.getElementById("username-display").innerText = data.name;
+  document.getElementById("pfp").src = data.pfp;
 }
 
 function logout() {
-  document.querySelector('.container').style.display = 'flex';
-  document.getElementById('dashboard').style.display = 'none';
+  localStorage.removeItem("currentUser");
+  document.getElementById("dashboard").style.display = "none";
+  document.getElementById("login-container").style.display = "block";
 }
 
 function changePfp() {
-  const file = document.getElementById('pfpUpload').files[0];
-  if (file) {
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "image/*";
+  fileInput.onchange = e => {
+    const file = e.target.files[0];
     const reader = new FileReader();
-    reader.onload = () => {
-      localStorage.setItem('userPfp', reader.result);
-      document.getElementById('pfp').src = reader.result;
+    reader.onload = function() {
+      const email = localStorage.getItem("currentUser");
+      const data = JSON.parse(localStorage.getItem(email));
+      data.pfp = reader.result;
+      localStorage.setItem(email, JSON.stringify(data));
+      document.getElementById("pfp").src = reader.result;
     };
     reader.readAsDataURL(file);
+  };
+  fileInput.click();
+}
+
+function changeName() {
+  const newName = prompt("Enter your new username:");
+  if (!newName) return;
+  const email = localStorage.getItem("currentUser");
+  const data = JSON.parse(localStorage.getItem(email));
+  data.name = newName;
+  localStorage.setItem(email, JSON.stringify(data));
+  document.getElementById("username-display").innerText = newName;
+}
+
+/* --- GAME --- */
+let pongCanvas, ctx, mode, player1Y = 150, player2Y = 150, ballX = 300, ballY = 200, ballDX = 4, ballDY = 4, playerSpeed = 6;
+
+function startGame() {
+  pongCanvas = document.getElementById("pong");
+  ctx = pongCanvas.getContext("2d");
+  mode = document.getElementById("mode-select").value;
+  document.addEventListener("keydown", movePaddle);
+  requestAnimationFrame(gameLoop);
+}
+
+function movePaddle(e) {
+  if (e.key === "w") player1Y -= playerSpeed;
+  if (e.key === "s") player1Y += playerSpeed;
+  if (mode === "2p") {
+    if (e.key === "ArrowUp") player2Y -= playerSpeed;
+    if (e.key === "ArrowDown") player2Y += playerSpeed;
   }
 }
 
-function updateName() {
-  const newName = document.getElementById('changeName').value;
-  if (newName) {
-    localStorage.setItem('userName', newName);
-    document.getElementById('displayName').textContent = newName;
-    alert('Username updated!');
-  }
-}
+function gameLoop() {
+  ctx.clearRect(0,0,600,400);
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(10, player1Y, 10, 80);
+  ctx.fillRect(580, player2Y, 10, 80);
+  ctx.beginPath();
+  ctx.arc(ballX, ballY, 8, 0, Math.PI * 2);
+  ctx.fill();
 
-function searchPlayer() {
-  const query = document.getElementById('searchInput').value;
-  const playerList = document.getElementById('playerList');
-  playerList.innerHTML = '';
-  if (query) {
-    const div = document.createElement('div');
-    div.innerHTML = `
-      <p>👤 ${query}</p>
-      <button onclick="alert('Friend request sent!')">Add Friend</button>
-      <button onclick="alert('You are now following ${query}!')">Follow</button>
-    `;
-    playerList.appendChild(div);
+  ballX += ballDX;
+  ballY += ballDY;
+
+  if (ballY <= 0 || ballY >= 400) ballDY = -ballDY;
+  if (ballX <= 20 && ballY > player1Y && ballY < player1Y + 80) ballDX = -ballDX;
+  if (ballX >= 570 && ballY > player2Y && ballY < player2Y + 80) ballDX = -ballDX;
+
+  if (ballX < 0 || ballX > 600) {
+    ballX = 300; ballY = 200; ballDX = -ballDX;
   }
+
+  if (mode === "ai") {
+    if (player2Y + 40 < ballY) player2Y += 3;
+    else player2Y -= 3;
+  }
+
+  requestAnimationFrame(gameLoop);
 }
 </script>
 </body>
