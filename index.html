@@ -143,7 +143,7 @@ canvas {
   <input type="email" id="login-email" placeholder="Email">
   <div style="position:relative;">
     <input type="password" id="login-password" placeholder="Password">
-    <span id="togglePassword" style="position:absolute; right:40px; top:15px; cursor:pointer;">👁️</span>
+    <span id="togglePasswordLogin" style="position:absolute; right:40px; top:15px; cursor:pointer;">👁️</span>
   </div>
   <button onclick="login()">Login</button>
   <span class="link" onclick="showSignup()">Create account</span>
@@ -153,7 +153,10 @@ canvas {
 <div class="container" id="signup-container">
   <h1>Create Johniverse Account</h1>
   <input type="email" id="signup-email" placeholder="Email">
-  <input type="password" id="signup-password" placeholder="Password">
+  <div style="position:relative;">
+    <input type="password" id="signup-password" placeholder="Password">
+    <span id="togglePasswordSignup" style="position:absolute; right:40px; top:15px; cursor:pointer;">👁️</span>
+  </div>
   <button onclick="signup()">Sign Up</button>
   <span class="link" onclick="showLogin()">Back to Login</span>
 </div>
@@ -185,13 +188,17 @@ canvas {
 window.addEventListener("load", () => {
   setTimeout(() => {
     document.getElementById("loading-screen").style.display = "none";
-    document.getElementById("login-container").style.display = "block";
+    autoLogin();
   }, 1500);
 });
 
 /* --- PASSWORD TOGGLE --- */
-document.getElementById("togglePassword").addEventListener("click", function() {
+document.getElementById("togglePasswordLogin").addEventListener("click", function() {
   const pwd = document.getElementById("login-password");
+  pwd.type = pwd.type === "password" ? "text" : "password";
+});
+document.getElementById("togglePasswordSignup").addEventListener("click", function() {
+  const pwd = document.getElementById("signup-password");
   pwd.type = pwd.type === "password" ? "text" : "password";
 });
 
@@ -206,21 +213,28 @@ function showLogin() {
 }
 
 function signup() {
-  const email = document.getElementById("signup-email").value;
-  const password = document.getElementById("signup-password").value;
+  const email = document.getElementById("signup-email").value.trim();
+  const password = document.getElementById("signup-password").value.trim();
   if (!email || !password) return alert("Fill all fields!");
+  if (localStorage.getItem(email)) return alert("Email already registered!");
   localStorage.setItem(email, JSON.stringify({ password, name: "Traveler", pfp: "https://i.imgur.com/fb7yZkX.png" }));
   alert("Account created! You can now log in.");
   showLogin();
 }
 
 function login() {
-  const email = document.getElementById("login-email").value;
-  const password = document.getElementById("login-password").value;
+  const email = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value.trim();
   const data = JSON.parse(localStorage.getItem(email));
   if (!data || data.password !== password) return alert("Invalid login!");
   localStorage.setItem("currentUser", email);
   loadDashboard();
+}
+
+function autoLogin() {
+  const current = localStorage.getItem("currentUser");
+  if (current) loadDashboard();
+  else document.getElementById("login-container").style.display = "block";
 }
 
 function loadDashboard() {
@@ -246,6 +260,7 @@ function changePfp() {
   fileInput.accept = "image/*";
   fileInput.onchange = e => {
     const file = e.target.files[0];
+    if (!file) return;
     const reader = new FileReader();
     reader.onload = function() {
       const email = localStorage.getItem("currentUser");
@@ -276,6 +291,8 @@ function startGame() {
   pongCanvas = document.getElementById("pong");
   ctx = pongCanvas.getContext("2d");
   mode = document.getElementById("mode-select").value;
+  player1Y = 150; player2Y = 150;
+  ballX = 300; ballY = 200; ballDX = 4; ballDY = 4;
   document.addEventListener("keydown", movePaddle);
   requestAnimationFrame(gameLoop);
 }
@@ -287,6 +304,9 @@ function movePaddle(e) {
     if (e.key === "ArrowUp") player2Y -= playerSpeed;
     if (e.key === "ArrowDown") player2Y += playerSpeed;
   }
+  // Keep paddles inside canvas
+  player1Y = Math.max(0, Math.min(player1Y, 320));
+  player2Y = Math.max(0, Math.min(player2Y, 320));
 }
 
 function gameLoop() {
@@ -303,15 +323,16 @@ function gameLoop() {
 
   if (ballY <= 0 || ballY >= 400) ballDY = -ballDY;
   if (ballX <= 20 && ballY > player1Y && ballY < player1Y + 80) ballDX = -ballDX;
-  if (ballX >= 570 && ballY > player2Y && ballY < player2Y + 80) ballDX = -ballDX;
+  if (ballX >= 580 && ballY > player2Y && ballY < player2Y + 80) ballDX = -ballDX;
 
   if (ballX < 0 || ballX > 600) {
-    ballX = 300; ballY = 200; ballDX = -ballDX;
+    ballX = 300; ballY = 200; ballDX = -ballDX; ballDY = 4;
   }
 
   if (mode === "ai") {
     if (player2Y + 40 < ballY) player2Y += 3;
     else player2Y -= 3;
+    player2Y = Math.max(0, Math.min(player2Y, 320));
   }
 
   requestAnimationFrame(gameLoop);
@@ -319,3 +340,4 @@ function gameLoop() {
 </script>
 </body>
 </html>
+
