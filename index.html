@@ -4,333 +4,344 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Johniverse Portal 🌌</title>
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-
 <style>
-body {
-  margin:0; font-family:'Poppins',sans-serif; color:white;
-  display:flex; justify-content:center; align-items:center; min-height:100vh;
-  background-size:cover; background-position:center; transition:background 1s ease-in-out;
-}
-.container, #dashboard {
-  display:none; width:90%; max-width:700px;
-  background: rgba(0,0,0,0.85); padding:20px; border-radius:15px;
-  box-shadow:0 0 25px #a84eff; text-align:center;
-}
-.container.show, #dashboard.show { display:block; }
-input, button { padding:10px; margin:5px; border-radius:5px; border:none; width:90%; max-width:400px; }
-button { cursor:pointer; background:#a84eff; color:white; font-weight:bold; transition:all 0.3s; }
-button:hover { background:#c07bff; transform:scale(1.05); }
-#friends-list div { background:rgba(255,255,255,0.1); padding:5px; margin:3px 0; border-radius:5px; cursor:pointer; }
-#friends-list div:hover { background:rgba(168,78,255,0.3); }
-#chat-messages { height:200px; overflow:auto; background:rgba(255,255,255,0.1); padding:10px; border-radius:5px; margin-top:10px; }
-#chat-messages div { margin:4px 0; padding:4px; border-radius:4px; background:rgba(255,255,255,0.05); }
-.pfp-container { position:relative; display:inline-block; margin-bottom:15px; }
-#pfp { width:120px; height:120px; border-radius:50%; border:3px solid #a84eff; object-fit:cover; transition:all 0.3s; }
-#pfp:hover { transform:scale(1.1); box-shadow:0 0 20px #a84eff; }
-#games-list { display:none; margin-top:10px; }
-#games-list button { width:80%; margin:5px auto; }
-canvas { display:block; margin:10px auto; background:black; border:2px solid #a84eff; }
+* { box-sizing: border-box; font-family: 'Poppins', sans-serif; margin:0; padding:0; }
+body { min-height:100vh; display:flex; justify-content:center; align-items:center; background:black; color:white; overflow-x:hidden; }
+
+/* Containers */
+.container { display:none; background:rgba(0,0,0,0.75); padding:20px; border-radius:15px; box-shadow:0 0 15px #a84eff; width:90%; max-width:400px; text-align:center; transition:all 0.3s ease; }
+h1,h2,h3{ margin:10px 0; }
+input,select{ width:90%; padding:10px; margin:5px 0; border-radius:5px; border:none; background:rgba(255,255,255,0.1); color:white; }
+button{ padding:10px 20px; margin:5px; border-radius:5px; border:none; background:#a84eff; color:white; font-weight:bold; cursor:pointer; transition:all 0.2s; }
+button:hover{ background:#c07bff; transform:scale(1.05); }
+.link{ color:#d7baff; cursor:pointer; display:block; margin-top:10px; text-decoration:underline; }
+
+/* Dashboard */
+#dashboard{ display:none; flex-direction:column; align-items:center; background:rgba(0,0,0,0.8); border-radius:15px; padding:20px; box-shadow:0 0 20px #a84eff; width:90%; max-width:800px; position:relative; }
+.pfp-container{ position:relative; display:inline-block; }
+#pfp{ width:120px; height:120px; border-radius:50%; border:3px solid #a84eff; object-fit:cover; cursor:pointer; transition:all 0.2s;}
+#pfp:hover{ transform:scale(1.05); }
+.online-dot{ position:absolute; bottom:8px; right:8px; width:20px; height:20px; background:#00ff66; border-radius:50%; border:2px solid white; }
+
+#friends-list div:hover{ background:#2a2a2a; cursor:pointer; }
+
+#game-container{ margin-top:20px; }
+
+/* Chat */
+#chat-box{ width:100%; max-width:700px; height:150px; overflow-y:auto; background:rgba(0,0,0,0.5); margin:10px 0; padding:5px; border-radius:10px; }
+#chat-box div{ margin:2px 0; padding:2px 5px; background:rgba(255,255,255,0.1); border-radius:5px; }
+
+/* Star */
+.star{ position:absolute; width:30px; height:30px; background:yellow; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); cursor:pointer; }
+
+/* Background */
+body{ background-size:cover; background-position:center; transition:background 0.5s; }
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- Login -->
 <div class="container" id="login-container">
   <h1>Login</h1>
-  <input type="email" id="login-email" placeholder="Email"><br>
-  <input type="password" id="login-password" placeholder="Password"><br>
+  <input type="email" id="login-email" placeholder="Email">
+  <input type="password" id="login-password" placeholder="Password">
   <button onclick="login()">Login</button>
   <span class="link" onclick="showSignup()">Create Account</span>
 </div>
 
-<!-- SIGNUP -->
+<!-- Signup -->
 <div class="container" id="signup-container">
-  <h1>Sign Up</h1>
-  <input type="email" id="signup-email" placeholder="Email"><br>
-  <input type="text" id="signup-username" placeholder="Username"><br>
-  <input type="password" id="signup-password" placeholder="Password"><br>
+  <h1>Create Account</h1>
+  <input type="email" id="signup-email" placeholder="Email">
+  <input type="text" id="signup-username" placeholder="Username">
+  <input type="password" id="signup-password" placeholder="Password">
   <button onclick="signup()">Create Account</button>
   <span class="link" onclick="showLogin()">Back to Login</span>
 </div>
 
-<!-- DASHBOARD -->
+<!-- Dashboard -->
 <div id="dashboard">
   <div class="pfp-container">
-    <img id="pfp" src="https://i.imgur.com/fb7yZkX.png">
+    <img id="pfp" src="https://i.imgur.com/fb7yZkX.png" onclick="changePfp()">
+    <div class="online-dot"></div>
+    <input type="file" id="pfp-upload" style="display:none">
   </div>
-  <h2 id="username-display">Welcome, Traveler</h2>
-  <button onclick="changeName()">Change Name</button>
-  <button onclick="logout()">Logout</button>
+  <h2 id="username-display">Welcome</h2>
+  <div>Online Users: <span id="online-count">0</span></div>
 
-  <!-- Friends -->
-  <div id="friends-section">
-    <h3>Friends</h3>
-    <input type="text" id="friend-search" placeholder="Add by email or username">
-    <div id="friends-list"></div>
-  </div>
+  <h3>Friends</h3>
+  <input type="text" id="friend-search" placeholder="Search by email or username">
+  <div id="friends-list"></div>
 
-  <!-- Global Chat -->
-  <div id="chat-section">
-    <h3>Global Chat</h3>
-    <div id="chat-messages"></div>
-    <input type="text" id="chat-input" placeholder="Type a message" onkeypress="if(event.key==='Enter'){sendMessage();}">
-    <button onclick="sendMessage()">Send</button>
-  </div>
+  <h3>Global Chat</h3>
+  <div id="chat-box"></div>
+  <input type="text" id="chat-input" placeholder="Type message">
+  <button onclick="sendChat()">Send</button>
+  <audio id="chat-sound" src="https://freesound.org/data/previews/514/514556_921394-lq.mp3"></audio>
 
-  <!-- Games -->
-  <div id="games-section">
-    <h3>🎮 Games</h3>
-    <button onclick="toggleGamesList()">Show Games</button>
-    <div id="games-list">
-      <button onclick="startPingPong()">Ping Pong</button>
-      <button onclick="startSnake()">Snake</button>
-      <button onclick="startClickStar()">Click the Star!</button>
-    </div>
-    <div id="game-container"></div>
+  <h3>Games</h3>
+  <div>
+    <button id="game-pingpong">Ping Pong</button>
+    <button id="game-snake">Snake</button>
+    <button id="game-star">Click Star</button>
   </div>
+  <div id="game-container"></div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-// Firebase config
+// Firebase
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
-  authDomain: "johniverseportal.firebaseapp.com",
-  databaseURL: "https://johniverseportal-default-rtdb.firebaseio.com",
-  projectId: "johniverseportal",
-  storageBucket: "johniverseportal.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "SENDER_ID",
+  appId: "APP_ID"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// Random JJK meme background
-const jjkMemes = [
-  "https://i.imgur.com/7J9YhQF.jpg",
-  "https://i.imgur.com/fTj0VqC.jpg",
-  "https://i.imgur.com/0FvGH9R.jpg"
+// Backgrounds
+const backgrounds = [
+  "https://wallpapercave.com/wp/wp10816761.jpg",
+  "https://i.pinimg.com/originals/c4/7c/5c/c47c5c4f620b2153266e7422c9e43455.jpg",
+  "https://images6.alphacoders.com/114/1145396.jpg"
 ];
-function setRandomBackground(){ 
-  document.body.style.backgroundImage = `url(${jjkMemes[Math.floor(Math.random()*jjkMemes.length)]})`; 
-}
-setRandomBackground();
+setInterval(()=>{ document.body.style.backgroundImage=`url(${backgrounds[Math.floor(Math.random()*backgrounds.length)]})`; },10000);
 
-// Show/hide login/signup
-function showSignup(){ document.getElementById("login-container").classList.remove("show"); document.getElementById("signup-container").classList.add("show"); }
-function showLogin(){ document.getElementById("signup-container").classList.remove("show"); document.getElementById("login-container").classList.add("show"); }
+// Login/Signup
+function showSignup(){ document.getElementById("login-container").style.display="none"; document.getElementById("signup-container").style.display="block"; }
+function showLogin(){ document.getElementById("signup-container").style.display="none"; document.getElementById("login-container").style.display="block"; }
 
-// Signup
 function signup(){
-  const email = document.getElementById("signup-email").value;
-  const username = document.getElementById("signup-username").value;
-  const password = document.getElementById("signup-password").value;
+  const email=document.getElementById("signup-email").value;
+  const username=document.getElementById("signup-username").value;
+  const password=document.getElementById("signup-password").value;
   if(!email||!username||!password){ alert("Fill all fields!"); return; }
-  const userData = {email, name:username, friends:[], pfp:"https://i.imgur.com/fb7yZkX.png", password};
-  localStorage.setItem(email, JSON.stringify(userData));
-  localStorage.setItem("currentUser", email);
+  if(localStorage.getItem(email)){ alert("Account exists!"); return; }
+  const data={password,name:username,pfp:"https://i.imgur.com/fb7yZkX.png",friends:[]};
+  localStorage.setItem(email,JSON.stringify(data));
+  localStorage.setItem("currentUser",email);
   loadDashboard();
 }
 
-// Login
 function login(){
-  const email = document.getElementById("login-email").value;
-  const password = document.getElementById("login-password").value;
-  const data = JSON.parse(localStorage.getItem(email));
-  if(!data || data.password!==password){ alert("Invalid login!"); return; }
-  localStorage.setItem("currentUser", email);
+  const email=document.getElementById("login-email").value;
+  const password=document.getElementById("login-password").value;
+  const data=JSON.parse(localStorage.getItem(email));
+  if(!data||data.password!==password){ alert("Invalid login!"); return; }
+  localStorage.setItem("currentUser",email);
   loadDashboard();
 }
 
-// Load dashboard
 function loadDashboard(){
-  const email = localStorage.getItem("currentUser");
-  if(!email) return;
-  const data = JSON.parse(localStorage.getItem(email));
-  document.getElementById("login-container").classList.remove("show");
-  document.getElementById("signup-container").classList.remove("show");
-  const dash = document.getElementById("dashboard");
-  dash.classList.add("show");
-  document.getElementById("username-display").innerText = data.name;
-  document.getElementById("pfp").src = data.pfp;
-  updateFriendsList();
+  const email=localStorage.getItem("currentUser");
+  const data=JSON.parse(localStorage.getItem(email));
+  document.getElementById("login-container").style.display="none";
+  document.getElementById("signup-container").style.display="none";
+  document.getElementById("dashboard").style.display="flex";
+  document.getElementById("username-display").innerText=data.name;
+  document.getElementById("pfp").src=data.pfp;
+  loadFriends();
+  loadChat();
+  trackOnline();
 }
 
-// Logout
-function logout(){
-  localStorage.removeItem("currentUser");
-  document.getElementById("dashboard").classList.remove("show");
-  document.getElementById("login-container").classList.add("show");
+// Change PFP
+function changePfp(){
+  const fileInput=document.getElementById("pfp-upload");
+  fileInput.click();
+  fileInput.onchange=e=>{
+    const file=e.target.files[0];
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const email=localStorage.getItem("currentUser");
+      const data=JSON.parse(localStorage.getItem(email));
+      data.pfp=reader.result;
+      localStorage.setItem(email,JSON.stringify(data));
+      document.getElementById("pfp").src=reader.result;
+    };
+    reader.readAsDataURL(file);
+  };
 }
 
-// Change name
-function changeName(){
-  const newName = prompt("Enter new username:");
-  if(!newName) return;
-  const email = localStorage.getItem("currentUser");
-  const data = JSON.parse(localStorage.getItem(email));
-  data.name = newName;
-  localStorage.setItem(email, JSON.stringify(data));
-  document.getElementById("username-display").innerText = newName;
+// Friends
+function loadFriends(){
+  const email=localStorage.getItem("currentUser");
+  const data=JSON.parse(localStorage.getItem(email));
+  const listDiv=document.getElementById("friends-list");
+  listDiv.innerHTML="";
+  data.friends.forEach(f=>{
+    const div=document.createElement("div"); div.textContent=f; listDiv.appendChild(div);
+  });
 }
-
-// Friend search & add
-document.getElementById("friend-search").addEventListener("input", updateFriendSuggestions);
-function updateFriendSuggestions(){
-  const search = document.getElementById("friend-search").value.toLowerCase();
-  const friendsDiv = document.getElementById("friends-list");
-  friendsDiv.innerHTML="";
-  if(!search) return;
+document.getElementById("friend-search").addEventListener("input",()=>{
+  const val=document.getElementById("friend-search").value.toLowerCase();
+  const listDiv=document.getElementById("friends-list"); listDiv.innerHTML="";
   Object.keys(localStorage).forEach(key=>{
-    if(key==="currentUser") return;
-    const user = JSON.parse(localStorage.getItem(key));
-    if(user.name.toLowerCase().startsWith(search) || user.email.toLowerCase().startsWith(search)){
-      const div = document.createElement("div");
-      div.textContent = `${user.name} (${user.email})`;
-      div.onclick = ()=>addFriend(user.email);
-      friendsDiv.appendChild(div);
+    if(key===val || JSON.parse(localStorage.getItem(key)).name.toLowerCase().startsWith(val)){
+      const div=document.createElement("div");
+      div.textContent=JSON.parse(localStorage.getItem(key)).name;
+      div.onclick=()=>{ addFriend(key); };
+      listDiv.appendChild(div);
     }
   });
+});
+function addFriend(key){
+  const email=localStorage.getItem("currentUser");
+  const data=JSON.parse(localStorage.getItem(email));
+  const friendName=JSON.parse(localStorage.getItem(key)).name;
+  if(!data.friends.includes(friendName)) data.friends.push(friendName);
+  localStorage.setItem(email,JSON.stringify(data));
+  loadFriends();
 }
-function addFriend(friendEmail){
-  const email = localStorage.getItem("currentUser");
-  const userData = JSON.parse(localStorage.getItem(email));
-  if(!userData.friends.includes(friendEmail)) userData.friends.push(friendEmail);
-  localStorage.setItem(email, JSON.stringify(userData));
-  updateFriendsList();
+
+// Chat
+function loadChat(){
+  db.ref("chat/").on("value",snapshot=>{
+    const chatBox=document.getElementById("chat-box"); chatBox.innerHTML="";
+    const data=snapshot.val();
+    if(data) Object.values(data).forEach(m=>{
+      const div=document.createElement("div");
+      div.textContent=`${m.user}: ${m.message}`;
+      chatBox.appendChild(div);
+      chatBox.scrollTop=chatBox.scrollHeight;
+    });
+  });
 }
-function updateFriendsList(){
-  const email = localStorage.getItem("currentUser");
-  const userData = JSON.parse(localStorage.getItem(email));
-  const friendsDiv = document.getElementById("friends-list");
-  friendsDiv.innerHTML="";
-  userData.friends.forEach(f=>{
-    const fData = JSON.parse(localStorage.getItem(f));
-    const div = document.createElement("div");
-    div.textContent = fData?fData.name:f;
-    friendsDiv.appendChild(div);
+function sendChat(){
+  const msg=document.getElementById("chat-input").value;
+  if(!msg) return;
+  document.getElementById("chat-input").value="";
+  const email=localStorage.getItem("currentUser");
+  const userData=JSON.parse(localStorage.getItem(email));
+  db.ref("chat/"+Date.now()).set({user:userData.name,message:msg});
+  document.getElementById("chat-sound").play();
+}
+
+// Online Users
+function trackOnline(){
+  const email=localStorage.getItem("currentUser");
+  db.ref("online/"+email).set(true);
+  db.ref("online/"+email).onDisconnect().remove();
+  db.ref("online/").on("value",snap=>{
+    document.getElementById("online-count").innerText=Object.keys(snap.val()||{}).length;
   });
 }
 
-// Global chat
-function sendMessage(){
-  const email = localStorage.getItem("currentUser");
-  const userData = JSON.parse(localStorage.getItem(email));
-  const msg = document.getElementById("chat-input").value;
-  if(!msg) return;
-  db.ref('chat/'+Date.now()).set({user:userData.name, message:msg});
-  document.getElementById("chat-input").value="";
-}
-db.ref('chat/').on('value', snapshot=>{
-  const chatBox = document.getElementById("chat-messages");
-  chatBox.innerHTML="";
-  const data = snapshot.val();
-  if(data){
-    Object.values(data).forEach(m=>{
-      const div = document.createElement("div");
-      div.textContent = `${m.user}: ${m.message}`;
-      chatBox.appendChild(div);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    });
-  }
-});
-
-// Auto login
-window.onload = ()=>{
-  if(localStorage.getItem("currentUser")) loadDashboard();
-  else document.getElementById("login-container").classList.add("show");
-};
-
 // Games
-function toggleGamesList(){
-  const g = document.getElementById("games-list");
-  g.style.display = g.style.display==="none"?"block":"none";
-}
+let keys={}, pongCanvas, ctx, player1Y=150, player2Y=150, ballX=300, ballY=200, ballDX=4, ballDY=4, playerSpeed=6, gameRunning=false, mode="ai";
 
-// === Mini Games ===
 // Ping Pong
-let pongCanvas, ctx, mode, player1Y=150, player2Y=150, ballX=300, ballY=200, ballDX=4, ballDY=4, playerSpeed=6, gameRunning=false;
-function startPingPong(){
-  const container = document.getElementById("game-container");
-  container.innerHTML='<canvas id="pong" width="600" height="400"></canvas><button onclick="stopGame()">Stop Game</button>';
-  pongCanvas = document.getElementById("pong");
-  ctx = pongCanvas.getContext("2d");
-  mode="ai";
-  gameRunning=true;
-  document.addEventListener("keydown", movePaddle);
-  gameLoop();
+function startPingPong(selectedMode="ai"){
+  mode=selectedMode;
+  const container=document.getElementById("game-container");
+  container.innerHTML=`
+    <canvas id="pong" width="600" height="400"></canvas>
+    <button onclick="stopGame()">Stop Game</button>
+    <div>
+      <label>Mode: </label>
+      <select id="pong-mode">
+        <option value="ai">VS AI</option>
+        <option value="2p">2 Players</option>
+      </select>
+    </div>
+  `;
+  document.getElementById("pong-mode").value=mode;
+  document.getElementById("pong-mode").onchange=e=>mode=e.target.value;
+
+  pongCanvas=document.getElementById("pong");
+  ctx=pongCanvas.getContext("2d");
+  player1Y=player2Y=150; ballX=300; ballY=200; ballDX=4; ballDY=4;
+  gameRunning=true; keys={};
+  document.addEventListener("keydown",e=>keys[e.key]=true);
+  document.addEventListener("keyup",e=>keys[e.key]=false);
+  requestAnimationFrame(pongLoop);
 }
-function movePaddle(e){
-  if(!gameRunning) return;
-  if(e.key==="w") player1Y-=playerSpeed;
-  if(e.key==="s") player1Y+=playerSpeed;
-}
-function gameLoop(){
+function pongLoop(){
   if(!gameRunning) return;
   ctx.clearRect(0,0,600,400);
+
+  if(keys["w"]) player1Y-=playerSpeed;
+  if(keys["s"]) player1Y+=playerSpeed;
+
+  if(mode==="2p"){
+    if(keys["ArrowUp"]) player2Y-=playerSpeed;
+    if(keys["ArrowDown"]) player2Y+=playerSpeed;
+  } else {
+    let target=ballY-40;
+    if(player2Y+40<target) player2Y+=Math.min(4,target-(player2Y+40));
+    if(player2Y+40>target) player2Y-=Math.min(4,(player2Y+40)-target);
+  }
+
+  player1Y=Math.max(0,Math.min(320,player1Y));
+  player2Y=Math.max(0,Math.min(320,player2Y));
+
   ctx.fillStyle="#fff";
   ctx.fillRect(10,player1Y,10,80);
   ctx.fillRect(580,player2Y,10,80);
-  ctx.beginPath();
-  ctx.arc(ballX,ballY,8,0,Math.PI*2);
-  ctx.fill();
+
+  ctx.beginPath(); ctx.arc(ballX,ballY,8,0,Math.PI*2); ctx.fill();
+
   ballX+=ballDX; ballY+=ballDY;
+
   if(ballY<=0||ballY>=400) ballDY=-ballDY;
-  if(ballX<=20&&ballY>player1Y&&ballY<player1Y+80) ballDX=-ballDX;
-  if(ballX>=570&&ballY>player2Y&&ballY<player2Y+80) ballDX=-ballDX;
-  if(ballX<0||ballX>600){ ballX=300; ballY=200; ballDX=-ballDX; }
-  if(mode==="ai"){ if(player2Y+40<ballY) player2Y+=3; else player2Y-=3; }
-  requestAnimationFrame(gameLoop);
+  if(ballX<=20 && ballY>player1Y && ballY<player1Y+80) ballDX=-ballDX;
+  if(ballX>=570 && ballY>player2Y && ballY<player2Y+80) ballDX=-ballDX;
+
+  if(ballX<0||ballX>600){ ballX=300; ballY=200; ballDX=-ballDX; ballDY=4*(Math.random()>0.5?1:-1); }
+
+  requestAnimationFrame(pongLoop);
 }
+
+// Stop game
 function stopGame(){ gameRunning=false; document.getElementById("game-container").innerHTML=""; }
 
-// Snake game (simple)
+// Snake
 function startSnake(){
-  const container = document.getElementById("game-container");
+  const container=document.getElementById("game-container");
   container.innerHTML='<canvas id="snake" width="400" height="400"></canvas><button onclick="stopGame()">Stop Game</button>';
-  const canvas = document.getElementById("snake");
-  const ctx = canvas.getContext("2d");
-  let snake=[{x:10,y:10}], dir={x:1,y:0}, food={x:15,y:15};
-  gameRunning=true;
-  document.addEventListener("keydown", e=>{
-    if(e.key==="ArrowUp") dir={x:0,y:-1};
-    if(e.key==="ArrowDown") dir={x:0,y:1};
-    if(e.key==="ArrowLeft") dir={x:-1,y:0};
-    if(e.key==="ArrowRight") dir={x:1,y:0};
+  const canvas=document.getElementById("snake"); const ctx=canvas.getContext("2d");
+  let snake=[{x:10,y:10}], dir={x:1,y:0}, food={x:15,y:15}; gameRunning=true;
+  document.addEventListener("keydown",e=>{
+    if(e.key==="ArrowUp"&&dir.y!==1) dir={x:0,y:-1};
+    if(e.key==="ArrowDown"&&dir.y!==-1) dir={x:0,y:1};
+    if(e.key==="ArrowLeft"&&dir.x!==1) dir={x:-1,y:0};
+    if(e.key==="ArrowRight"&&dir.x!==-1) dir={x:1,y:0};
   });
   function loop(){
     if(!gameRunning) return;
     ctx.fillStyle="black"; ctx.fillRect(0,0,400,400);
-    snake.push({x:snake[snake.length-1].x+dir.x,y:snake[snake.length-1].y+dir.y});
-    if(snake[snake.length-1].x===food.x && snake[snake.length-1].y===food.y){
-      food={x:Math.floor(Math.random()*20),y:Math.floor(Math.random()*20)};
-    } else snake.shift();
-    ctx.fillStyle="green";
-    snake.forEach(s=>ctx.fillRect(s.x*20,s.y*20,20,20));
+    const head={x:snake[snake.length-1].x+dir.x,y:snake[snake.length-1].y+dir.y};
+    snake.push(head);
+    if(head.x===food.x&&head.y===food.y) food={x:Math.floor(Math.random()*20),y:Math.floor(Math.random()*20)}; else snake.shift();
+    ctx.fillStyle="green"; snake.forEach(s=>ctx.fillRect(s.x*20,s.y*20,20,20));
     ctx.fillStyle="red"; ctx.fillRect(food.x*20,food.y*20,20,20);
     requestAnimationFrame(loop);
   }
   loop();
 }
 
-// Click the Star! surprise game
-function startClickStar(){
-  const container = document.getElementById("game-container");
-  container.innerHTML='<div id="star-game" style="position:relative;width:400px;height:400px;background:black;margin:10px auto;"></div><p>Score: <span id="star-score">0</span></p><button onclick="stopGame()">Stop Game</button>';
-  const gameDiv = document.getElementById("star-game");
-  let score=0;
-  gameRunning=true;
-  function spawnStar(){
-    if(!gameRunning) return;
-    const star = document.createElement("div");
-    star.style.position="absolute"; star.style.width="30px"; star.style.height="30px";
-    star.style.background="yellow"; star.style.borderRadius="50%";
-    star.style.top=Math.random()*370+"px"; star.style.left=Math.random()*370+"px";
-    star.onclick = ()=>{ score++; document.getElementById("star-score").innerText=score; star.remove(); spawnStar(); };
-    gameDiv.appendChild(star);
+// Star Game
+function startStar(){
+  const container=document.getElementById("game-container");
+  container.innerHTML='<button onclick="stopGame()">Stop Game</button>';
+  for(let i=0;i<10;i++){
+    const star=document.createElement("div"); star.classList.add("star");
+    star.style.left=Math.random()*window.innerWidth+"px";
+    star.style.top=Math.random()*window.innerHeight+"px";
+    star.onclick=()=>{star.remove();};
+    container.appendChild(star);
   }
-  spawnStar();
 }
+
+// Buttons
+document.getElementById("game-pingpong").onclick=()=>startPingPong();
+document.getElementById("game-snake").onclick=()=>startSnake();
+document.getElementById("game-star").onclick=()=>startStar();
+</script>
+</body>
+</html>
