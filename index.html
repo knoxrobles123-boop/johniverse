@@ -4,61 +4,107 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Johniverse Portal 🌌</title>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
 <style>
-*{box-sizing:border-box;font-family:'Poppins',sans-serif;}
-body{margin:0;background:url('https://wallpapercave.com/wp/wp10816761.jpg') no-repeat center center/cover;color:white;min-height:100vh;display:flex;justify-content:center;align-items:center;}
-#loading-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle,#0d0d0d,#000);display:flex;justify-content:center;align-items:center;flex-direction:column;z-index:9999;}
-.loader{width:70px;height:70px;border:8px solid rgba(255,255,255,0.2);border-top:8px solid #a84eff;border-radius:50%;animation:spin 1s linear infinite;}
-@keyframes spin{from{transform:rotate(0);}to{transform:rotate(360deg);}}
-#loading-text{color:#d7baff;margin-top:10px;}
-.container{display:none;background:rgba(0,0,0,0.75);padding:20px;border-radius:15px;box-shadow:0 0 15px #a84eff;width:90%;max-width:400px;text-align:center;}
-h1{color:#d7baff;}
-input{width:90%;padding:10px;margin:10px;border:none;border-radius:5px;background:rgba(255,255,255,0.1);color:white;}
-button{background:#a84eff;border:none;padding:10px 20px;border-radius:5px;color:white;font-weight:bold;cursor:pointer;margin-top:10px;}
-button:hover{background:#c07bff;}
-.link{color:#d7baff;cursor:pointer;display:block;margin-top:10px;}
-#dashboard{display:none;flex-direction:column;align-items:center;background:rgba(0,0,0,0.8);border-radius:15px;padding:20px;box-shadow:0 0 20px #a84eff;width:90%;max-width:700px;text-align:center;position:relative;}
-.pfp-container{position:relative;display:inline-block;}
-#pfp{width:120px;height:120px;border-radius:50%;border:3px solid #a84eff;object-fit:cover;}
-.online-dot{position:absolute;bottom:8px;right:8px;width:20px;height:20px;background:#00ff66;border-radius:50%;border:2px solid white;}
-.section-container{margin-top:20px;background:rgba(255,255,255,0.1);padding:15px;border-radius:10px;text-align:center;}
-#friends-list,#friend-search-results{list-style:none;padding-left:0;}
-.friend-item{cursor:pointer;margin:5px 0;padding:5px;background:rgba(255,255,255,0.1);border-radius:5px;}
-#chat-box{display:none;position:fixed;bottom:20px;right:20px;width:300px;max-height:400px;background:rgba(0,0,0,0.9);border:2px solid #a84eff;border-radius:10px;flex-direction:column;padding:10px;overflow:hidden;display:flex;flex-direction:column;}
-#chat-messages{flex:1;overflow-y:auto;height:250px;border-bottom:1px solid #a84eff;margin-bottom:5px;padding:5px;}
-#chat-input{width:100%;padding:5px;border:none;border-radius:5px;margin-top:5px;}
-@media(max-width:768px){#dashboard{width:95%;}}
+body {
+  margin:0;
+  font-family: 'Poppins', sans-serif;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  background-size:cover;
+  background-position:center;
+}
+
+/* Containers */
+.container {
+  display:none;
+  background: rgba(0,0,0,0.75);
+  padding:20px;
+  border-radius:15px;
+  box-shadow:0 0 15px #a84eff;
+  width:90%;
+  max-width:400px;
+  text-align:center;
+}
+
+h1,h2,h3 { color:#d7baff; }
+
+input {
+  width:90%;
+  padding:10px;
+  margin:10px;
+  border:none;
+  border-radius:5px;
+  background: rgba(255,255,255,0.1);
+  color:white;
+}
+
+button {
+  background:#a84eff;
+  border:none;
+  padding:10px 20px;
+  border-radius:5px;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+button:hover { background:#c07bff; }
+
+.link { color:#d7baff; cursor:pointer; display:block; margin-top:10px; }
+
+/* Dashboard */
+#dashboard {
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  background: rgba(0,0,0,0.8);
+  border-radius:15px;
+  padding:20px;
+  box-shadow:0 0 20px #a84eff;
+  width:90%;
+  max-width:700px;
+  text-align:center;
+  position:relative;
+}
+
+.pfp-container { position:relative; display:inline-block; }
+#pfp { width:120px; height:120px; border-radius:50%; border:3px solid #a84eff; object-fit:cover; }
+.online-dot { position:absolute; bottom:8px; right:8px; width:20px; height:20px; background:#00ff66; border-radius:50%; border:2px solid white; }
+
+/* Chat */
+#chat-section { margin-top:20px; width:90%; max-width:600px; text-align:left; }
+#chat-messages { height:200px; overflow:auto; background: rgba(255,255,255,0.1); padding:10px; border-radius:5px; }
+#chat-input { width:80%; display:inline-block; }
+#chat-send { display:inline-block; padding:10px 15px; }
+
 </style>
 </head>
 <body>
 
-<!-- LOADING -->
-<div id="loading-screen">
-  <div class="loader"></div>
-  <p id="loading-text">Loading Johniverse...</p>
-</div>
-
 <!-- LOGIN -->
 <div class="container" id="login-container">
   <h1>Login</h1>
-  <input type="email" id="login-email" placeholder="Email">
-  <div style="position:relative;">
-    <input type="password" id="login-password" placeholder="Password">
-    <span id="togglePasswordLogin" style="position:absolute; right:40px; top:15px; cursor:pointer;">👁️</span>
-  </div>
+  <input type="email" id="login-email" placeholder="Email"><br>
+  <input type="password" id="login-password" placeholder="Password"><br>
   <button onclick="login()">Login</button>
-  <span class="link" onclick="showSignup()">Create account</span>
+  <span class="link" onclick="showSignup()">Create Account</span>
 </div>
 
 <!-- SIGNUP -->
 <div class="container" id="signup-container">
   <h1>Sign Up</h1>
-  <input type="email" id="signup-email" placeholder="Email">
-  <input type="text" id="signup-username" placeholder="Username">
-  <div style="position:relative;">
-    <input type="password" id="signup-password" placeholder="Password">
-    <span id="togglePasswordSignup" style="position:absolute; right:40px; top:15px; cursor:pointer;">👁️</span>
-  </div>
+  <input type="email" id="signup-email" placeholder="Email"><br>
+  <input type="text" id="signup-username" placeholder="Username"><br>
+  <input type="password" id="signup-password" placeholder="Password"><br>
   <button onclick="signup()">Create Account</button>
   <span class="link" onclick="showLogin()">Back to Login</span>
 </div>
@@ -66,215 +112,176 @@ button:hover{background:#c07bff;}
 <!-- DASHBOARD -->
 <div id="dashboard">
   <div class="pfp-container">
-    <img id="pfp" src="https://i.imgur.com/fb7yZkX.png" alt="Profile Picture">
+    <img id="pfp" src="https://i.imgur.com/fb7yZkX.png">
     <div class="online-dot"></div>
   </div>
   <h2 id="username-display">Welcome, Traveler</h2>
-  <button onclick="changePfp()">Change PFP</button>
   <button onclick="changeName()">Change Name</button>
   <button onclick="logout()">Logout</button>
 
-  <!-- QUICK LINKS -->
-  <div class="section-container">
-    <h3>🌐 Quick Links</h3>
-    <a href="https://www.google.com" target="_blank" style="color:#d7baff;">Google</a> | 
-    <a href="https://www.youtube.com" target="_blank" style="color:#d7baff;">YouTube</a> | 
-    <a href="https://github.com" target="_blank" style="color:#d7baff;">GitHub</a>
+  <!-- Ping Pong -->
+  <button onclick="location.href='https://your-pingpong-website.com'">Play Ping Pong</button>
+
+  <!-- Friends List -->
+  <div id="friends-section">
+    <h3>Friends</h3>
+    <input type="text" id="friend-search" placeholder="Add by email or username">
+    <button onclick="addFriend()">Add Friend</button>
+    <div id="friends-list"></div>
   </div>
 
-  <!-- WIKI -->
-  <div class="section-container">
-    <h3>📚 Portable Wikipedia</h3>
-    <input type="text" id="wiki-query" placeholder="Search Wikipedia..." style="width:70%; padding:5px;">
-    <button onclick="searchWiki()">Search</button>
-    <iframe id="wiki-frame" src="" style="width:100%; height:300px; margin-top:10px; border:2px solid #a84eff;"></iframe>
+  <!-- Global Chat -->
+  <div id="chat-section">
+    <h3>Global Chat</h3>
+    <div id="chat-messages"></div>
+    <input type="text" id="chat-input" placeholder="Type a message">
+    <button id="chat-send" onclick="sendMessage()">Send</button>
   </div>
-
-  <!-- GAMES -->
-  <div class="section-container">
-    <h3>🏓 Games</h3>
-    <button onclick="openPingPong()">Play Ping Pong</button>
-  </div>
-
-  <!-- FRIENDS -->
-  <div class="section-container">
-    <h3>👥 Add Friend</h3>
-    <input type="text" id="friend-search" placeholder="By Email or Username" style="padding:5px; margin-top:5px;">
-    <button onclick="searchFriends()">Search</button>
-    <ul id="friend-search-results"></ul>
-    <h3>Your Friends</h3>
-    <ul id="friends-list"></ul>
-  </div>
-
-  <!-- CHAT -->
-  <div class="section-container">
-    <button onclick="toggleChat()">💬 Chat</button>
-  </div>
-</div>
-
-<!-- CHAT BOX -->
-<div id="chat-box">
-  <div id="chat-messages"></div>
-  <input type="text" id="chat-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter'){sendChat();}">
-  <button onclick="sendChat()">Send</button>
 </div>
 
 <script>
-/* --- LOADING --- */
-window.addEventListener("load", ()=>{
-  setTimeout(()=>{document.getElementById("loading-screen").style.display="none"; autoLogin();},1500);
-});
+/* --- Firebase Setup --- */
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "johniverseportal.firebaseapp.com",
+  databaseURL: "https://johniverseportal-default-rtdb.firebaseio.com",
+  projectId: "johniverseportal",
+  storageBucket: "johniverseportal.appspot.com",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-/* --- PASSWORD TOGGLE --- */
-document.getElementById("togglePasswordLogin").addEventListener("click",()=>{ 
-  const pwd=document.getElementById("login-password"); pwd.type=pwd.type==="password"?"text":"password"; 
-});
-document.getElementById("togglePasswordSignup").addEventListener("click",()=>{ 
-  const pwd=document.getElementById("signup-password"); pwd.type=pwd.type==="password"?"text":"password"; 
-});
+/* --- Random JJK Meme Background --- */
+const jjkMemes = [
+  "https://i.imgur.com/7J9YhQF.jpg",
+  "https://i.imgur.com/fTj0VqC.jpg",
+  "https://i.imgur.com/0FvGH9R.jpg"
+];
+document.body.style.backgroundImage = `url(${jjkMemes[Math.floor(Math.random()*jjkMemes.length)]})`;
 
-/* --- AUTH --- */
+/* --- Show/Hide Forms --- */
 function showSignup(){ document.getElementById("login-container").style.display="none"; document.getElementById("signup-container").style.display="block"; }
 function showLogin(){ document.getElementById("signup-container").style.display="none"; document.getElementById("login-container").style.display="block"; }
 
+/* --- Signup --- */
 function signup(){
-  const email=document.getElementById("signup-email").value.trim();
-  const username=document.getElementById("signup-username").value.trim();
-  const password=document.getElementById("signup-password").value.trim();
-  if(!email||!password||!username){ alert("Fill all fields!"); return; }
-  if(localStorage.getItem(email)){ alert("Email already exists!"); return; }
-  localStorage.setItem(email, JSON.stringify({email,password,name:username,pfp:"https://i.imgur.com/fb7yZkX.png",friends:[],following:[]})); 
-  localStorage.setItem("currentUser",email); 
+  const email = document.getElementById("signup-email").value;
+  const username = document.getElementById("signup-username").value;
+  const password = document.getElementById("signup-password").value;
+  if(!email||!username||!password) return alert("Fill all fields!");
+  const userData = {email, name:username, friends:[], pfp:"https://i.imgur.com/fb7yZkX.png"};
+  localStorage.setItem(email, JSON.stringify(userData));
+  localStorage.setItem("currentUser", email); // Auto-login
   loadDashboard();
 }
 
+/* --- Login --- */
 function login(){
-  const email=document.getElementById("login-email").value.trim();
-  const password=document.getElementById("login-password").value.trim();
-  const data=JSON.parse(localStorage.getItem(email));
-  if(!data||data.password!==password){ alert("Invalid login!"); return; }
-  localStorage.setItem("currentUser",email);
+  const email = document.getElementById("login-email").value;
+  const password = document.getElementById("login-password").value;
+  const data = JSON.parse(localStorage.getItem(email));
+  if(!data) return alert("Account does not exist!");
+  localStorage.setItem("currentUser", email);
   loadDashboard();
 }
 
-function autoLogin(){
-  const current=localStorage.getItem("currentUser");
-  if(current){ loadDashboard(); }
-  else{ document.getElementById("login-container").style.display="block"; }
-}
-
+/* --- Load Dashboard --- */
 function loadDashboard(){
-  const email=localStorage.getItem("currentUser");
-  const data=JSON.parse(localStorage.getItem(email));
-  if(!data){ document.getElementById("login-container").style.display="block"; return; }
+  const email = localStorage.getItem("currentUser");
+  if(!email) return;
+  const data = JSON.parse(localStorage.getItem(email));
   document.getElementById("login-container").style.display="none";
   document.getElementById("signup-container").style.display="none";
   document.getElementById("dashboard").style.display="flex";
-  document.getElementById("username-display").innerText=data.name;
-  document.getElementById("pfp").src=data.pfp;
-  renderFriends();
+  document.getElementById("username-display").innerText = data.name;
+  document.getElementById("pfp").src = data.pfp;
+  updateFriendsList();
 }
 
-/* --- ENTER KEY --- */
-["login-email","login-password"].forEach(id=>document.getElementById(id).addEventListener("keypress",e=>{if(e.key==="Enter")login();}));
-["signup-email","signup-username","signup-password"].forEach(id=>document.getElementById(id).addEventListener("keypress",e=>{if(e.key==="Enter")signup();}));
-
-/* --- LOGOUT --- */
-function logout(){ localStorage.removeItem("currentUser"); document.getElementById("dashboard").style.display="none"; document.getElementById("login-container").style.display="block"; }
-
-/* --- PROFILE --- */
-function changePfp(){ 
-  const input=document.createElement("input"); input.type="file"; input.accept="image/*";
-  input.onchange=e=>{
-    const file=e.target.files[0]; const reader=new FileReader();
-    reader.onload=function(){
-      const email=localStorage.getItem("currentUser"); const data=JSON.parse(localStorage.getItem(email));
-      data.pfp=reader.result; localStorage.setItem(email,JSON.stringify(data));
-      document.getElementById("pfp").src=reader.result;
-    };
-    reader.readAsDataURL(file);
-  };
-  input.click();
+/* --- Logout --- */
+function logout(){
+  localStorage.removeItem("currentUser");
+  document.getElementById("dashboard").style.display="none";
+  document.getElementById("login-container").style.display="block";
 }
 
+/* --- Change Name --- */
 function changeName(){
-  const newName=prompt("Enter your new username:");
+  const newName = prompt("Enter new username:");
   if(!newName) return;
-  const email=localStorage.getItem("currentUser"); const data=JSON.parse(localStorage.getItem(email));
-  data.name=newName; localStorage.setItem(email,JSON.stringify(data));
-  document.getElementById("username-display").innerText=newName;
+  const email = localStorage.getItem("currentUser");
+  const data = JSON.parse(localStorage.getItem(email));
+  data.name = newName;
+  localStorage.setItem(email, JSON.stringify(data));
+  document.getElementById("username-display").innerText = newName;
 }
 
-/* --- WIKI --- */
-function searchWiki(){
-  const query=document.getElementById("wiki-query").value.trim();
-  if(!query) return;
-  document.getElementById("wiki-frame").src="https://en.wikipedia.org/wiki/"+encodeURIComponent(query);
-}
-
-/* --- PING PONG REDIRECT --- */
-function openPingPong(){ window.open("pingpong.html","PingPong","width=650,height=450"); }
-
-/* --- FRIENDS --- */
-function searchFriends(){
-  const query=document.getElementById("friend-search").value.trim().toLowerCase();
-  const resultsContainer=document.getElementById("friend-search-results");
-  resultsContainer.innerHTML="";
-  if(!query) return;
-  Object.keys(localStorage).forEach(email=>{
-    if(email==="currentUser") return;
-    const user=JSON.parse(localStorage.getItem(email));
-    if(user.email.toLowerCase().includes(query)||user.name.toLowerCase().includes(query)){
-      const li=document.createElement("li");
-      li.className="friend-item";
-      li.textContent=user.name+" ("+user.email+")";
-      li.onclick=()=>addFriend(email);
-      resultsContainer.appendChild(li);
+/* --- Friends List --- */
+function addFriend(){
+  const search = document.getElementById("friend-search").value;
+  if(!search) return;
+  const allUsers = Object.keys(localStorage).filter(key=> key!=="currentUser");
+  const matches = [];
+  allUsers.forEach(u=>{
+    const data = JSON.parse(localStorage.getItem(u));
+    if(data.email===search || data.name.toLowerCase()===search.toLowerCase()) matches.push(data);
+  });
+  const currentUserEmail = localStorage.getItem("currentUser");
+  const currentData = JSON.parse(localStorage.getItem(currentUserEmail));
+  matches.forEach(m=>{
+    if(!currentData.friends.includes(m.email)){
+      currentData.friends.push(m.email);
     }
   });
+  localStorage.setItem(currentUserEmail, JSON.stringify(currentData));
+  updateFriendsList();
 }
-
-function addFriend(emailToAdd){
-  const currentEmail=localStorage.getItem("currentUser");
-  if(emailToAdd===currentEmail) return alert("Cannot add yourself!");
-  const currentData=JSON.parse(localStorage.getItem(currentEmail));
-  if(!currentData.friends.includes(emailToAdd)){
-    currentData.friends.push(emailToAdd);
-    localStorage.setItem(currentEmail,JSON.stringify(currentData));
-    renderFriends();
-    alert("Friend added!");
-  }else alert("Already a friend!");
-}
-
-function renderFriends(){
-  const currentEmail=localStorage.getItem("currentUser");
-  const data=JSON.parse(localStorage.getItem(currentEmail));
-  const list=document.getElementById("friends-list");
-  list.innerHTML="";
-  data.friends.forEach(email=>{
-    const user=JSON.parse(localStorage.getItem(email));
-    const li=document.createElement("li");
-    li.className="friend-item"; li.textContent=user.name+" ("+user.email+")";
-    list.appendChild(li);
+function updateFriendsList(){
+  const email = localStorage.getItem("currentUser");
+  const data = JSON.parse(localStorage.getItem(email));
+  const friendsDiv = document.getElementById("friends-list");
+  friendsDiv.innerHTML = "";
+  data.friends.forEach(f=>{
+    const friendData = JSON.parse(localStorage.getItem(f));
+    const div = document.createElement("div");
+    div.textContent = friendData ? friendData.name : f;
+    friendsDiv.appendChild(div);
   });
 }
 
-/* --- CHAT --- */
-function toggleChat(){
-  const chat=document.getElementById("chat-box");
-  chat.style.display=chat.style.display==="flex"?"none":"flex";
-}
-
-function sendChat(){
-  const input=document.getElementById("chat-input");
-  const msg=input.value.trim();
+/* --- Global Chat --- */
+document.getElementById("chat-input").addEventListener("keypress", function(e){
+  if(e.key==="Enter") sendMessage();
+});
+function sendMessage(){
+  const email = localStorage.getItem("currentUser");
+  const data = JSON.parse(localStorage.getItem(email));
+  const msg = document.getElementById("chat-input").value;
   if(!msg) return;
-  const messages=document.getElementById("chat-messages");
-  const username=JSON.parse(localStorage.getItem(localStorage.getItem("currentUser"))).name;
-  const p=document.createElement("p"); p.innerText=username+": "+msg;
-  messages.appendChild(p);
-  input.value=""; messages.scrollTop=messages.scrollHeight;
+  const chatRef = db.ref('chat/' + Date.now());
+  chatRef.set({user:data.name, email:data.email, message:msg});
+  document.getElementById("chat-input").value = "";
 }
+db.ref('chat/').on('value', snapshot=>{
+  const data = snapshot.val();
+  const chatBox = document.getElementById("chat-messages");
+  chatBox.innerHTML="";
+  if(data){
+    Object.values(data).forEach(m=>{
+      const div = document.createElement("div");
+      div.textContent = `${m.user}: ${m.message}`;
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    });
+  }
+});
+
+/* --- Auto-login if user exists --- */
+window.addEventListener("load", ()=>{
+  if(localStorage.getItem("currentUser")) loadDashboard();
+});
 </script>
 </body>
 </html>
