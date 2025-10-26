@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Johniverse Portal</title>
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: url('https://i.imgur.com/rn6ElqN.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+    margin: 0;
+    overflow-x: hidden;
+  }
+
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .login-box, .signup-box {
+    background: rgba(0,0,0,0.75);
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+    display: none;
+  }
+
+  .login-box.active, .signup-box.active {
+    display: block;
+  }
+
+  input[type="text"], input[type="password"], input[type="email"], input[type="file"] {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 10px;
+  }
+
+  button {
+    background: #2ecc71;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  button:hover {
+    background: #27ae60;
+  }
+
+  .toggle-link {
+    color: #9b59b6;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  #dashboard {
+    display: none;
+    padding: 20px;
+    text-align: center;
+  }
+
+  #pfp {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    object-fit: cover;
+  }
+
+  .eye {
+    position: relative;
+    cursor: pointer;
+    color: #fff;
+    margin-left: -30px;
+  }
+
+  @media (max-width: 600px) {
+    .login-box, .signup-box {
+      width: 95%;
+    }
+  }
+
+  #news, #wiki, #playerSearch {
+    background: rgba(0,0,0,0.6);
+    border-radius: 15px;
+    margin: 15px auto;
+    padding: 15px;
+    max-width: 700px;
+  }
+
+  #playerList button {
+    margin: 5px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div id="loginBox" class="login-box active">
+    <h2>Welcome to Johniverse</h2>
+    <input type="text" id="loginEmail" placeholder="Email" /><br>
+    <div>
+      <input type="password" id="loginPassword" placeholder="Password" />
+      <span class="eye" onclick="togglePassword('loginPassword')">👁️</span>
+    </div>
+    <button onclick="login()">Login</button>
+    <p>Don't have an account? <span class="toggle-link" onclick="showSignup()">Sign Up</span></p>
+  </div>
+
+  <div id="signupBox" class="signup-box">
+    <h2>Create Account</h2>
+    <input type="email" id="signupEmail" placeholder="Email" /><br>
+    <div>
+      <input type="password" id="signupPassword" placeholder="Password" />
+      <span class="eye" onclick="togglePassword('signupPassword')">👁️</span>
+    </div>
+    <button onclick="signup()">Sign Up</button>
+    <p>Already have an account? <span class="toggle-link" onclick="showLogin()">Login</span></p>
+  </div>
+</div>
+
+<div id="dashboard">
+  <h2>Welcome, <span id="displayName"></span>!</h2>
+
+  <img id="pfp" src="https://i.imgur.com/WP7L5wb.png" alt="Profile Picture"><br>
+  <input type="file" id="pfpUpload" accept="image/*" onchange="changePfp()"><br><br>
+
+  <!-- 👇 Username change moved directly under PFP -->
+  <input type="text" id="changeName" placeholder="Enter new username">
+  <button onclick="updateName()">Save Username</button>
+  <br><br>
+
+  <button onclick="logout()">Logout</button>
+
+  <div id="news">
+    <h3>📰 Johniverse News</h3>
+    <p>Welcome to the multiverse! New features and characters coming soon!</p>
+  </div>
+
+  <div id="wiki">
+    <h3>🌐 Portable Wikipedia</h3>
+    <iframe src="https://en.m.wikipedia.org" width="100%" height="300"></iframe>
+  </div>
+
+  <div id="playerSearch">
+    <h3>🔍 Search Players</h3>
+    <input type="text" id="searchInput" placeholder="Search Player Name">
+    <button onclick="searchPlayer()">Search</button>
+    <div id="playerList"></div>
+  </div>
+</div>
+
+<script>
+function togglePassword(id) {
+  const input = document.getElementById(id);
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function showSignup() {
+  document.getElementById('loginBox').classList.remove('active');
+  document.getElementById('signupBox').classList.add('active');
+}
+
+function showLogin() {
+  document.getElementById('signupBox').classList.remove('active');
+  document.getElementById('loginBox').classList.add('active');
+}
+
+function signup() {
+  const email = document.getElementById('signupEmail').value;
+  const password = document.getElementById('signupPassword').value;
+  if (email && password) {
+    localStorage.setItem('userEmail', email);
+    localStorage.setItem('userPassword', password);
+    localStorage.setItem('userName', email.split('@')[0]);
+    alert('Account created! You can now log in.');
+    showLogin();
+  } else {
+    alert('Please fill all fields.');
+  }
+}
+
+function login() {
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  const savedEmail = localStorage.getItem('userEmail');
+  const savedPassword = localStorage.getItem('userPassword');
+  if (email === savedEmail && password === savedPassword) {
+    showDashboard();
+  } else {
+    alert('Invalid email or password.');
+  }
+}
+
+function showDashboard() {
+  document.querySelector('.container').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('displayName').textContent = localStorage.getItem('userName') || 'User';
+  document.getElementById('pfp').src = localStorage.getItem('userPfp') || 'https://i.imgur.com/WP7L5wb.png';
+}
+
+function logout() {
+  document.querySelector('.container').style.display = 'flex';
+  document.getElementById('dashboard').style.display = 'none';
+}
+
+function changePfp() {
+  const file = document.getElementById('pfpUpload').files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      localStorage.setItem('userPfp', reader.result);
+      document.getElementById('pfp').src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function updateName() {
+  const newName = document.getElementById('changeName').value;
+  if (newName) {
+    localStorage.setItem('userName', newName);
+    document.getElementById('displayName').textContent = newName;
+    alert('Username updated!');
+  }
+}
+
+function searchPlayer() {
+  const query = document.getElementById('searchInput').value;
+  const playerList = document.getElementById('playerList');
+  playerList.innerHTML = '';
+  if (query) {
+    const div = document.createElement('div');
+    div.innerHTML = `
+      <p>👤 ${query}</p>
+      <button onclick="alert('Friend request sent!')">Add Friend</button>
+      <button onclick="alert('You are now following ${query}!')">Follow</button>
+    `;
+    playerList.appendChild(div);
+  }
+}
+</script>
+</body>
+</html>
