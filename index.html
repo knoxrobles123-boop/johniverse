@@ -10,157 +10,33 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
 <style>
-/* === BODY & BACKGROUND === */
 body {
-  margin:0;
-  font-family: 'Poppins', sans-serif;
-  color:white;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-  background-size:cover;
-  background-position:center;
-  transition: background 1s ease-in-out;
+  margin:0; font-family:'Poppins',sans-serif; color:white;
+  display:flex; justify-content:center; align-items:center; min-height:100vh;
+  background-size:cover; background-position:center; transition:background 1s ease-in-out;
 }
-
-/* === LOADING SCREEN === */
-#loading-screen {
-  position:fixed; top:0; left:0;
-  width:100%; height:100%;
-  background: radial-gradient(circle, #0d0d0d, #000);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  z-index:9999;
-  opacity:1;
-  transition: opacity 1s ease;
+.container, #dashboard {
+  display:none; width:90%; max-width:700px;
+  background: rgba(0,0,0,0.85); padding:20px; border-radius:15px;
+  box-shadow:0 0 25px #a84eff; text-align:center;
 }
-.loader {
-  width:70px; height:70px;
-  border:8px solid rgba(255,255,255,0.2);
-  border-top:8px solid #a84eff;
-  border-radius:50%;
-  animation: spin 1s linear infinite;
-}
-@keyframes spin { from {transform:rotate(0);} to {transform:rotate(360deg);} }
-#loading-text { color: #d7baff; margin-top: 10px; font-size:18px; animation: fadeText 1s infinite alternate;}
-@keyframes fadeText { from {opacity:0.5;} to {opacity:1;} }
-
-/* === CONTAINERS === */
-.container {
-  display:none;
-  background: rgba(0,0,0,0.75);
-  padding:25px;
-  border-radius:15px;
-  box-shadow: 0 0 25px #a84eff;
-  width:90%; max-width:400px;
-  text-align:center;
-  opacity:0;
-  transform: translateY(-20px);
-  transition: all 0.5s ease;
-}
-.container.show {
-  display:block;
-  opacity:1;
-  transform: translateY(0);
-}
-
-/* === INPUTS === */
-input {
-  width:90%;
-  padding:12px;
-  margin:10px;
-  border:none;
-  border-radius:5px;
-  background: rgba(255,255,255,0.1);
-  color:white;
-  transition: all 0.3s;
-}
-input:focus {
-  background: rgba(255,255,255,0.2);
-  box-shadow: 0 0 10px #a84eff;
-  outline:none;
-}
-
-/* === BUTTONS === */
-button {
-  background:#a84eff;
-  border:none;
-  padding:12px 25px;
-  border-radius:8px;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-  margin-top:10px;
-  transition: all 0.3s;
-  box-shadow:0 0 5px #a84eff;
-}
-button:hover {
-  background:#c07bff;
-  transform: scale(1.05);
-  box-shadow:0 0 15px #c07bff;
-}
-
-/* === LINKS === */
-.link {
-  color:#d7baff; cursor:pointer; display:block; margin-top:10px;
-  transition: all 0.3s;
-}
-.link:hover { color:#fff; text-shadow:0 0 5px #a84eff; }
-
-/* === DASHBOARD === */
-#dashboard {
-  display:none;
-  flex-direction:column;
-  align-items:center;
-  background: rgba(0,0,0,0.85);
-  border-radius:15px;
-  padding:25px;
-  box-shadow:0 0 30px #a84eff;
-  width:90%; max-width:750px;
-  text-align:center;
-  opacity:0;
-  transform: translateY(-20px);
-  transition: all 0.5s ease;
-}
-#dashboard.show {
-  display:flex;
-  opacity:1;
-  transform: translateY(0);
-}
-
-/* === PROFILE PICTURE === */
+.container.show, #dashboard.show { display:block; }
+input, button { padding:10px; margin:5px; border-radius:5px; border:none; width:90%; max-width:400px; }
+button { cursor:pointer; background:#a84eff; color:white; font-weight:bold; transition:all 0.3s; }
+button:hover { background:#c07bff; transform:scale(1.05); }
+#friends-list div { background:rgba(255,255,255,0.1); padding:5px; margin:3px 0; border-radius:5px; cursor:pointer; }
+#friends-list div:hover { background:rgba(168,78,255,0.3); }
+#chat-messages { height:200px; overflow:auto; background:rgba(255,255,255,0.1); padding:10px; border-radius:5px; margin-top:10px; }
+#chat-messages div { margin:4px 0; padding:4px; border-radius:4px; background:rgba(255,255,255,0.05); }
 .pfp-container { position:relative; display:inline-block; margin-bottom:15px; }
-#pfp { width:120px; height:120px; border-radius:50%; border:3px solid #a84eff; object-fit:cover; transition: all 0.3s; }
-#pfp:hover { transform: scale(1.1); box-shadow:0 0 20px #a84eff; }
-
-/* === FRIENDS LIST === */
-#friends-list div {
-  background: rgba(255,255,255,0.1);
-  padding:8px 12px;
-  margin:5px 0;
-  border-radius:5px;
-  transition: all 0.3s;
-}
-#friends-list div:hover { background: rgba(168,78,255,0.3); transform: scale(1.02); }
-
-/* === CHAT === */
-#chat-section { margin-top:20px; width:90%; max-width:650px; text-align:left; }
-#chat-messages { height:200px; overflow:auto; background: rgba(255,255,255,0.1); padding:10px; border-radius:5px; transition: all 0.3s; }
-#chat-messages div { margin:4px 0; padding:4px; border-radius:4px; background: rgba(255,255,255,0.05); opacity:0; animation: fadeIn 0.5s forwards; }
-@keyframes fadeIn { to { opacity:1; } }
-
+#pfp { width:120px; height:120px; border-radius:50%; border:3px solid #a84eff; object-fit:cover; transition:all 0.3s; }
+#pfp:hover { transform:scale(1.1); box-shadow:0 0 20px #a84eff; }
+#games-list { display:none; margin-top:10px; }
+#games-list button { width:80%; margin:5px auto; }
+canvas { display:block; margin:10px auto; background:black; border:2px solid #a84eff; }
 </style>
 </head>
 <body>
-
-<!-- LOADING -->
-<div id="loading-screen">
-  <div class="loader"></div>
-  <p id="loading-text">Loading Johniverse...</p>
-</div>
 
 <!-- LOGIN -->
 <div class="container" id="login-container">
@@ -185,20 +61,15 @@ button:hover {
 <div id="dashboard">
   <div class="pfp-container">
     <img id="pfp" src="https://i.imgur.com/fb7yZkX.png">
-    <div class="online-dot"></div>
   </div>
   <h2 id="username-display">Welcome, Traveler</h2>
   <button onclick="changeName()">Change Name</button>
   <button onclick="logout()">Logout</button>
 
-  <!-- Ping Pong Button -->
-  <button onclick="window.location.href='https://your-pingpong-website.com'">Play Ping Pong</button>
-
   <!-- Friends -->
   <div id="friends-section">
     <h3>Friends</h3>
     <input type="text" id="friend-search" placeholder="Add by email or username">
-    <button onclick="addFriend()">Add Friend</button>
     <div id="friends-list"></div>
   </div>
 
@@ -206,13 +77,25 @@ button:hover {
   <div id="chat-section">
     <h3>Global Chat</h3>
     <div id="chat-messages"></div>
-    <input type="text" id="chat-input" placeholder="Type a message">
-    <button id="chat-send" onclick="sendMessage()">Send</button>
+    <input type="text" id="chat-input" placeholder="Type a message" onkeypress="if(event.key==='Enter'){sendMessage();}">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <!-- Games -->
+  <div id="games-section">
+    <h3>🎮 Games</h3>
+    <button onclick="toggleGamesList()">Show Games</button>
+    <div id="games-list">
+      <button onclick="startPingPong()">Ping Pong</button>
+      <button onclick="startSnake()">Snake</button>
+      <button onclick="startClickStar()">Click the Star!</button>
+    </div>
+    <div id="game-container"></div>
   </div>
 </div>
 
 <script>
-/* === Firebase Setup === */
+// Firebase config
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "johniverseportal.firebaseapp.com",
@@ -222,55 +105,50 @@ const firebaseConfig = {
   messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
   appId: "YOUR_APP_ID"
 };
-const app = firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-/* === Random JJK Backgrounds === */
+// Random JJK meme background
 const jjkMemes = [
   "https://i.imgur.com/7J9YhQF.jpg",
   "https://i.imgur.com/fTj0VqC.jpg",
   "https://i.imgur.com/0FvGH9R.jpg"
 ];
-document.body.style.backgroundImage = `url(${jjkMemes[Math.floor(Math.random()*jjkMemes.length)]})`;
+function setRandomBackground(){ 
+  document.body.style.backgroundImage = `url(${jjkMemes[Math.floor(Math.random()*jjkMemes.length)]})`; 
+}
+setRandomBackground();
 
-/* === Loading Screen === */
-window.addEventListener("load", ()=>{
-  setTimeout(()=>{
-    document.getElementById("loading-screen").style.opacity="0";
-    setTimeout(()=>{
-      document.getElementById("loading-screen").style.display="none";
-      if(localStorage.getItem("currentUser")) loadDashboard();
-      else document.getElementById("login-container").classList.add("show");
-    },1000);
-  },1500);
-});
-
-/* === Show/Hide Forms === */
+// Show/hide login/signup
 function showSignup(){ document.getElementById("login-container").classList.remove("show"); document.getElementById("signup-container").classList.add("show"); }
 function showLogin(){ document.getElementById("signup-container").classList.remove("show"); document.getElementById("login-container").classList.add("show"); }
 
-/* === Signup/Login Functions === */
+// Signup
 function signup(){
   const email = document.getElementById("signup-email").value;
   const username = document.getElementById("signup-username").value;
   const password = document.getElementById("signup-password").value;
-  if(!email||!username||!password) return alert("Fill all fields!");
-  const userData = {email, name:username, friends:[], pfp:"https://i.imgur.com/fb7yZkX.png"};
+  if(!email||!username||!password){ alert("Fill all fields!"); return; }
+  const userData = {email, name:username, friends:[], pfp:"https://i.imgur.com/fb7yZkX.png", password};
   localStorage.setItem(email, JSON.stringify(userData));
   localStorage.setItem("currentUser", email);
   loadDashboard();
 }
+
+// Login
 function login(){
   const email = document.getElementById("login-email").value;
+  const password = document.getElementById("login-password").value;
   const data = JSON.parse(localStorage.getItem(email));
-  if(!data) return alert("Account does not exist!");
+  if(!data || data.password!==password){ alert("Invalid login!"); return; }
   localStorage.setItem("currentUser", email);
   loadDashboard();
 }
 
-/* === Load Dashboard === */
+// Load dashboard
 function loadDashboard(){
   const email = localStorage.getItem("currentUser");
+  if(!email) return;
   const data = JSON.parse(localStorage.getItem(email));
   document.getElementById("login-container").classList.remove("show");
   document.getElementById("signup-container").classList.remove("show");
@@ -281,14 +159,14 @@ function loadDashboard(){
   updateFriendsList();
 }
 
-/* === Logout === */
+// Logout
 function logout(){
   localStorage.removeItem("currentUser");
   document.getElementById("dashboard").classList.remove("show");
   document.getElementById("login-container").classList.add("show");
 }
 
-/* === Change Name === */
+// Change name
 function changeName(){
   const newName = prompt("Enter new username:");
   if(!newName) return;
@@ -299,49 +177,57 @@ function changeName(){
   document.getElementById("username-display").innerText = newName;
 }
 
-/* === Friends List === */
-function addFriend(){
-  const search = document.getElementById("friend-search").value;
+// Friend search & add
+document.getElementById("friend-search").addEventListener("input", updateFriendSuggestions);
+function updateFriendSuggestions(){
+  const search = document.getElementById("friend-search").value.toLowerCase();
+  const friendsDiv = document.getElementById("friends-list");
+  friendsDiv.innerHTML="";
   if(!search) return;
-  const allUsers = Object.keys(localStorage).filter(k=>k!=="currentUser");
-  const matches=[];
-  allUsers.forEach(u=>{
-    const data = JSON.parse(localStorage.getItem(u));
-    if(data.email===search||data.name.toLowerCase()===search.toLowerCase()) matches.push(data);
+  Object.keys(localStorage).forEach(key=>{
+    if(key==="currentUser") return;
+    const user = JSON.parse(localStorage.getItem(key));
+    if(user.name.toLowerCase().startsWith(search) || user.email.toLowerCase().startsWith(search)){
+      const div = document.createElement("div");
+      div.textContent = `${user.name} (${user.email})`;
+      div.onclick = ()=>addFriend(user.email);
+      friendsDiv.appendChild(div);
+    }
   });
+}
+function addFriend(friendEmail){
   const email = localStorage.getItem("currentUser");
-  const currData = JSON.parse(localStorage.getItem(email));
-  matches.forEach(m=>{ if(!currData.friends.includes(m.email)) currData.friends.push(m.email); });
-  localStorage.setItem(email, JSON.stringify(currData));
+  const userData = JSON.parse(localStorage.getItem(email));
+  if(!userData.friends.includes(friendEmail)) userData.friends.push(friendEmail);
+  localStorage.setItem(email, JSON.stringify(userData));
   updateFriendsList();
 }
 function updateFriendsList(){
   const email = localStorage.getItem("currentUser");
-  const data = JSON.parse(localStorage.getItem(email));
+  const userData = JSON.parse(localStorage.getItem(email));
   const friendsDiv = document.getElementById("friends-list");
   friendsDiv.innerHTML="";
-  data.friends.forEach(f=>{
-    const fd = JSON.parse(localStorage.getItem(f));
+  userData.friends.forEach(f=>{
+    const fData = JSON.parse(localStorage.getItem(f));
     const div = document.createElement("div");
-    div.textContent = fd?fd.name:f;
+    div.textContent = fData?fData.name:f;
     friendsDiv.appendChild(div);
   });
 }
 
-/* === Global Chat === */
-document.getElementById("chat-input").addEventListener("keypress", function(e){ if(e.key==="Enter") sendMessage(); });
+// Global chat
 function sendMessage(){
   const email = localStorage.getItem("currentUser");
-  const data = JSON.parse(localStorage.getItem(email));
+  const userData = JSON.parse(localStorage.getItem(email));
   const msg = document.getElementById("chat-input").value;
   if(!msg) return;
-  db.ref('chat/' + Date.now()).set({user:data.name, email:data.email, message:msg});
+  db.ref('chat/'+Date.now()).set({user:userData.name, message:msg});
   document.getElementById("chat-input").value="";
 }
 db.ref('chat/').on('value', snapshot=>{
-  const data = snapshot.val();
   const chatBox = document.getElementById("chat-messages");
   chatBox.innerHTML="";
+  const data = snapshot.val();
   if(data){
     Object.values(data).forEach(m=>{
       const div = document.createElement("div");
@@ -351,6 +237,100 @@ db.ref('chat/').on('value', snapshot=>{
     });
   }
 });
-</script>
-</body>
-</html>
+
+// Auto login
+window.onload = ()=>{
+  if(localStorage.getItem("currentUser")) loadDashboard();
+  else document.getElementById("login-container").classList.add("show");
+};
+
+// Games
+function toggleGamesList(){
+  const g = document.getElementById("games-list");
+  g.style.display = g.style.display==="none"?"block":"none";
+}
+
+// === Mini Games ===
+// Ping Pong
+let pongCanvas, ctx, mode, player1Y=150, player2Y=150, ballX=300, ballY=200, ballDX=4, ballDY=4, playerSpeed=6, gameRunning=false;
+function startPingPong(){
+  const container = document.getElementById("game-container");
+  container.innerHTML='<canvas id="pong" width="600" height="400"></canvas><button onclick="stopGame()">Stop Game</button>';
+  pongCanvas = document.getElementById("pong");
+  ctx = pongCanvas.getContext("2d");
+  mode="ai";
+  gameRunning=true;
+  document.addEventListener("keydown", movePaddle);
+  gameLoop();
+}
+function movePaddle(e){
+  if(!gameRunning) return;
+  if(e.key==="w") player1Y-=playerSpeed;
+  if(e.key==="s") player1Y+=playerSpeed;
+}
+function gameLoop(){
+  if(!gameRunning) return;
+  ctx.clearRect(0,0,600,400);
+  ctx.fillStyle="#fff";
+  ctx.fillRect(10,player1Y,10,80);
+  ctx.fillRect(580,player2Y,10,80);
+  ctx.beginPath();
+  ctx.arc(ballX,ballY,8,0,Math.PI*2);
+  ctx.fill();
+  ballX+=ballDX; ballY+=ballDY;
+  if(ballY<=0||ballY>=400) ballDY=-ballDY;
+  if(ballX<=20&&ballY>player1Y&&ballY<player1Y+80) ballDX=-ballDX;
+  if(ballX>=570&&ballY>player2Y&&ballY<player2Y+80) ballDX=-ballDX;
+  if(ballX<0||ballX>600){ ballX=300; ballY=200; ballDX=-ballDX; }
+  if(mode==="ai"){ if(player2Y+40<ballY) player2Y+=3; else player2Y-=3; }
+  requestAnimationFrame(gameLoop);
+}
+function stopGame(){ gameRunning=false; document.getElementById("game-container").innerHTML=""; }
+
+// Snake game (simple)
+function startSnake(){
+  const container = document.getElementById("game-container");
+  container.innerHTML='<canvas id="snake" width="400" height="400"></canvas><button onclick="stopGame()">Stop Game</button>';
+  const canvas = document.getElementById("snake");
+  const ctx = canvas.getContext("2d");
+  let snake=[{x:10,y:10}], dir={x:1,y:0}, food={x:15,y:15};
+  gameRunning=true;
+  document.addEventListener("keydown", e=>{
+    if(e.key==="ArrowUp") dir={x:0,y:-1};
+    if(e.key==="ArrowDown") dir={x:0,y:1};
+    if(e.key==="ArrowLeft") dir={x:-1,y:0};
+    if(e.key==="ArrowRight") dir={x:1,y:0};
+  });
+  function loop(){
+    if(!gameRunning) return;
+    ctx.fillStyle="black"; ctx.fillRect(0,0,400,400);
+    snake.push({x:snake[snake.length-1].x+dir.x,y:snake[snake.length-1].y+dir.y});
+    if(snake[snake.length-1].x===food.x && snake[snake.length-1].y===food.y){
+      food={x:Math.floor(Math.random()*20),y:Math.floor(Math.random()*20)};
+    } else snake.shift();
+    ctx.fillStyle="green";
+    snake.forEach(s=>ctx.fillRect(s.x*20,s.y*20,20,20));
+    ctx.fillStyle="red"; ctx.fillRect(food.x*20,food.y*20,20,20);
+    requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+// Click the Star! surprise game
+function startClickStar(){
+  const container = document.getElementById("game-container");
+  container.innerHTML='<div id="star-game" style="position:relative;width:400px;height:400px;background:black;margin:10px auto;"></div><p>Score: <span id="star-score">0</span></p><button onclick="stopGame()">Stop Game</button>';
+  const gameDiv = document.getElementById("star-game");
+  let score=0;
+  gameRunning=true;
+  function spawnStar(){
+    if(!gameRunning) return;
+    const star = document.createElement("div");
+    star.style.position="absolute"; star.style.width="30px"; star.style.height="30px";
+    star.style.background="yellow"; star.style.borderRadius="50%";
+    star.style.top=Math.random()*370+"px"; star.style.left=Math.random()*370+"px";
+    star.onclick = ()=>{ score++; document.getElementById("star-score").innerText=score; star.remove(); spawnStar(); };
+    gameDiv.appendChild(star);
+  }
+  spawnStar();
+}
